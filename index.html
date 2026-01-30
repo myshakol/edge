@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDGE - Эротические фанты и покер на костях</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        .main-wrapper {
+            display: flex;
+            height: 100dvh;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 30px 40px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .header-left h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            font-size: 12px;
+            font-weight: 400;
+            color: #666666;
+            letter-spacing: 1px;
+        }
+
+        .lang-selector {
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 0 40px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .btn-play {
+            font-size: 20px;
+            padding: 20px;
+            margin: 40px 0;
+        }
+
+        /* COLLAPSIBLE */
+        .collapsible {
+            width: 100%;
+            padding: 12px;
+            margin: 30px 0;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .collapsible:hover {
+            background-color: #f5f5f5;
+        }
+
+        .collapsible.active {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 20px;
+            border: 2px solid #000000;
+            border-top: none;
+            background-color: #f9f9f9;
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+        /* CHECKBOXES */
+        .checkbox-group {
+            margin: 20px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #000000;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .info-icon {
+            cursor: help;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* RADIO BUTTONS */
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #000000;
+        }
+
+        .radio-item label {
+            cursor: pointer;
+        }
+
+        /* FOOTER LINKS */
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 80px;
+            padding-bottom: 60px;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: #000000;
+            text-decoration: none;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 3px;
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        /* GAME PAGE STYLES */
+        .game-wrapper {
+            display: none;
+            flex-direction: column;
+            height: 100dvh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .game-wrapper.active {
+            display: flex;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 2px solid #000000;
+        }
+
+        .game-header-left {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .game-header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .game-header-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .game-header-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .card-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            border: 3px solid #000000;
+            padding: 20px;
+            background-color: #ffffff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: auto;
+            overflow-y: auto;
+        }
+
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000000;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            gap: 10px;
+        }
+
+        .card-header > div:first-child {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-color {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .card-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 30px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: #666666;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px dashed #cccccc;
+            text-align: left;
+        }
+
+        .card-meta span {
+            display: block;
+            margin: 4px 0;
+        }
+
+        .timer-container {
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .timer {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .timer:hover {
+            border-color: #000000;
+        }
+
+        .timer.running {
+            color: #d32f2f;
+        }
+
+        .color-selector-container {
+            display: none;
+            position: fixed;
+            bottom: 180px;
+            right: 30px;
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            padding: 12px;
+            gap: 8px;
+            z-index: 500;
+            flex-direction: column;
+        }
+
+        .color-selector-container.active {
+            display: flex;
+        }
+
+        .color-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .color-btn.active {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .level-up-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .level-up-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .palette-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 20px;
+        }
+
+        .palette-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .card-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .card-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .card-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* COLOR PALETTE */
+        .color-green { color: #7d8f6f; }
+        .color-yellow { color: #c9a05d; }
+        .color-red { color: #b84a50; }
+        .color-burgundy { color: #8b4a6d; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .header-left h1 {
+                font-size: 36px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .card-text {
+                font-size: 14px;
+            }
+
+            .game-wrapper {
+                padding: 10px;
+            }
+
+            .control-buttons {
+                margin-top: 15px;
+            }
+
+            .card-buttons {
+                margin-top: 15px;
+            }
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border: 3px solid #000000;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .modal-buttons button:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .empty-deck-message {
+            text-align: center;
+            font-size: 14px;
+            color: #b84a50;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- HOME PAGE -->
+    <div id="home-page" class="home-page">
+        <header>
+            <div class="header-left">
+                <h1>EDGE</h1>
+                <p>эротические фанты и покер на костях</p>
+            </div>
+            <div class="lang-selector" onclick="alert('EN version coming soon')">ru|eng</div>
+        </header>
+
+        <div class="container">
+            <button class="btn btn-play" onclick="goToGame()">ИГРАТЬ</button>
+
+            <button class="collapsible" onclick="toggleCollapsible(this)">КОЛОДЫ</button>
+            <div class="collapsible-content">
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="main-deck" checked onchange="updateDeckSelection()">
+                        <label for="main-deck">Основная колода</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="photo-deck" checked onchange="updateDeckSelection()">
+                        <label for="photo-deck">Фото-видео съемка 🎁</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="extra-deck" onchange="updateDeckSelection()">
+                        <label for="extra-deck">Экстра колода Ж <span class="info-icon" onclick="alert('Доп. информация')">❓</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="radio-group">
+                <div class="radio-item">
+                    <input type="radio" id="mode-just" name="mode" value="just" checked onchange="onModeChange()">
+                    <label for="mode-just">просто фанты</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="mode-poker" name="mode" value="poker" onchange="onModeChange()">
+                    <label for="mode-poker">покер на костях</label>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <a href="#" onclick="alert('Краткий гайд')">Краткий гайд</a>
+                <a href="#" onclick="alert('Подробные правила')">Подробные правила</a>
+                <a href="#" onclick="alert('Соцсети и другие проекты')">Соцсети и другие проекты</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME PAGE -->
+    <div id="game-page" class="game-wrapper">
+        <div class="game-header">
+            <div class="game-header-left">EDGE</div>
+            <div class="game-header-buttons">
+                <button class="game-header-btn" onclick="goHome()">⌂</button>
+                <button class="game-header-btn" onclick="resetGameConfirm()">⟲</button>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <span id="card-color" class="card-color color-green">зеленая</span>
+                        <span id="card-type" style="font-size: 10px; color: #666666;">основная</span>
+                    </div>
+                    <div style="font-size: 10px; color: #666666; text-align: right;">
+                        <span id="card-id">--</span>
+                    </div>
+                </div>
+
+                <div class="card-text" id="card-text">
+                    Нажми кнопку "карта М" или "карта Ж" чтобы вытянуть задание
+                </div>
+
+                <div id="card-meta" class="card-meta" style="display: none;">
+                </div>
+
+                <div class="timer-container">
+                    <div class="timer" id="timer" onclick="startTimer()">00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-buttons">
+            <button class="card-btn" id="btn-male" onclick="drawCard('male')">карта М</button>
+            <button class="card-btn" id="btn-female" onclick="drawCard('female')">карта Ж</button>
+            <button class="card-btn" id="btn-extra" onclick="drawCard('extra')" style="display: none;">карта Ж ○</button>
+        </div>
+
+        <div class="control-buttons">
+            <button class="level-up-btn" onclick="levelUpConfirm()">уровень +</button>
+            <button class="palette-btn" onclick="toggleColorSelector()">⊕</button>
+        </div>
+
+        <div class="color-selector-container" id="color-selector">
+            <button class="color-btn" onclick="setLevel('green')" data-level="green" style="color: #7d8f6f; border-color: #7d8f6f;">G</button>
+            <button class="color-btn" onclick="setLevel('yellow')" data-level="yellow" style="color: #c9a05d; border-color: #c9a05d;">Y</button>
+            <button class="color-btn" onclick="setLevel('red')" data-level="red" style="color: #b84a50; border-color: #b84a50;">R</button>
+            <button class="color-btn" onclick="setLevel('burgundy')" data-level="burgundy" style="color: #8b4a6d; border-color: #8b4a6d;">B</button>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-text">Вы уверены?</h2>
+            <div class="modal-buttons">
+                <button onclick="closeModal()">Отмена</button>
+                <button onclick="confirmGoHome()">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные игры
+        let gameState = {
+            decks: {
+                GM: null, GF: null, YM: null, YF: null, RM: null, RF: null, BM: null, BF: null, EXL1: null, EXL2: null
+            },
+            active_decks: ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF'],
+            current_color: 'green',
+            played_cards: [],
+            timer_interval: null,
+            timer_duration: 0,
+            game_mode: 'just'
+        };
+
+        const colorMap = {
+            'green': { name: 'зеленая', hex: '#7d8f6f', code: 'G', type: 'основная' },
+            'yellow': { name: 'желтая', hex: '#c9a05d', code: 'Y', type: 'фото/видео' },
+            'red': { name: 'красная', hex: '#b84a50', code: 'R', type: 'основная' },
+            'burgundy': { name: 'бордовая', hex: '#8b4a6d', code: 'B', type: 'основная' }
+        };
+
+        async function loadDecks() {
+            const deckCodes = ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2'];
+            for (let code of deckCodes) {
+                try {
+                    const response = await fetch(`data/${code.toLowerCase()}.json`);
+                    if (!response.ok) throw new Error(`Failed to load ${code}.json`);
+                    const data = await response.json();
+                    gameState.decks[code] = JSON.parse(JSON.stringify(data.cards)); // Deep copy
+                    console.log(`✓ Loaded ${code}: ${gameState.decks[code].length} cards`);
+                } catch (e) {
+                    console.warn(`Could not load ${code}.json:`, e);
+                    gameState.decks[code] = [];
+                }
+            }
+        }
+
+        function toggleCollapsible(btn) {
+            btn.classList.toggle('active');
+            btn.nextElementSibling.classList.toggle('active');
+        }
+
+        function updateDeckSelection() {
+            const mainDeck = document.getElementById('main-deck').checked;
+            const photoDeck = document.getElementById('photo-deck').checked;
+            const extraDeck = document.getElementById('extra-deck').checked;
+            
+            gameState.active_decks = [];
+            if (mainDeck) gameState.active_decks.push('GM', 'GF');
+            if (photoDeck) gameState.active_decks.push('YM', 'YF');
+            if (extraDeck) gameState.active_decks.push('RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2');
+        }
+
+        function onModeChange() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const extraDeckCheckbox = document.getElementById('extra-deck');
+            
+            if (mode === 'poker') {
+                extraDeckCheckbox.checked = true;
+                extraDeckCheckbox.disabled = true;
+                updateDeckSelection();
+            } else {
+                extraDeckCheckbox.disabled = false;
+            }
+        }
+
+        function goToGame() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('game-page').classList.add('active');
+            
+            gameState.game_mode = document.querySelector('input[name="mode"]:checked').value;
+            const extraDeck = document.getElementById('extra-deck').checked;
+            const btnExtra = document.getElementById('btn-extra');
+            
+            // Кнопка появляется, если экстра-колода выбрана (независимо от режима)
+            if (extraDeck) {
+                btnExtra.style.display = 'flex';
+            } else {
+                btnExtra.style.display = 'none';
+            }
+            
+            updateDeckSelection();
+            loadDecks();
+        }
+
+        function goHome() {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Вы уверены?';
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = confirmGoHome;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function confirmGoHome() {
+            // Полностью сбрасываем игру в нулевое состояние
+            resetGame();
+
+            document.getElementById('game-page').classList.remove('active');
+            document.getElementById('home-page').style.display = 'block';
+            closeModal();
+        }
+
+        function resetGameConfirm() {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Вы уверены, что хотите перезапустить игру?';
+            
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = function() {
+                resetGame();
+                closeModal();
+            };
+        }
+
+        function resetGame() {
+            // Останавливаем и сбрасываем таймер
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            gameState.timer_duration = 0;
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('timer').classList.remove('running');
+
+            gameState.played_cards = [];
+            document.getElementById('card-text').textContent = 'Нажми кнопку "карта М" или "карта Ж" чтобы вытянуть задание';
+            document.getElementById('card-meta').style.display = 'none';
+            gameState.current_color = 'green';
+            setLevel('green');
+        }
+
+        function levelUpConfirm() {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Перейти на следующий уровень?';
+            
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = function() {
+                levelUp();
+                closeModal();
+            };
+        }
+
+        function levelUp() {
+            const levels = ['green', 'yellow', 'red', 'burgundy'];
+            const currentIndex = levels.indexOf(gameState.current_color);
+            
+            if (currentIndex < levels.length - 1) {
+                setLevel(levels[currentIndex + 1]);
+            } else {
+                alert('Вы достигли максимального уровня!');
+            }
+        }
+
+        function setLevel(level) {
+            gameState.current_color = level;
+            
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-level="${level}"]`)?.classList.add('active');
+            
+            const cardColor = document.getElementById('card-color');
+            cardColor.textContent = colorMap[level].name;
+            cardColor.className = `card-color color-${level}`;
+            
+            const cardType = document.getElementById('card-type');
+            cardType.textContent = colorMap[level].type;
+            
+            // Скрываем/показываем кнопку "карта Ж ○" в зависимости от уровня
+            const btnExtra = document.getElementById('btn-extra');
+            if (level === 'burgundy') {
+                // На бордовом уровне кнопка скрывается
+                btnExtra.style.display = 'none';
+            } else {
+                // На других уровнях - всегда видна, если выбрана экстра-колода
+                const extraDeck = document.getElementById('extra-deck').checked;
+                btnExtra.style.display = extraDeck ? 'flex' : 'none';
+            }
+        }
+
+        function toggleColorSelector() {
+            const selector = document.getElementById('color-selector');
+            selector.classList.toggle('active');
+        }
+
+        function drawCard(type) {
+
+            // Останавливаем старый таймер полностью
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            document.getElementById('timer').classList.remove('running');
+            
+            // Определяем, из какой колоды тянуть карту
+            let deckCode;
+            
+            if (type === 'extra') {
+                // Для экстра колоды: выбираем в зависимости от уровня
+                // EXL1 для зеленого уровня, EXL2 для желтого и красного
+                if (gameState.current_color === 'green') {
+                    deckCode = 'EXL1';
+                } else if (gameState.current_color === 'yellow' || gameState.current_color === 'red') {
+                    deckCode = 'EXL2';
+                } else {
+                    // Для бордового уровня кнопка не должна быть видна
+                    return;
+                }
+            } else {
+                // Для обычных: color code + gender code
+                const colorCode = colorMap[gameState.current_color].code;
+                const genderCode = type === 'male' ? 'M' : 'F';
+                deckCode = colorCode + genderCode;
+            }
+
+            // Проверяем, есть ли карты в этой колоде
+            const deck = gameState.decks[deckCode];
+            if (!deck || deck.length === 0) {
+                showEmptyDeck(deckCode, type);
+                return;
+            }
+
+            // Вытягиваем случайную карту
+            const randomIndex = Math.floor(Math.random() * deck.length);
+            const card = deck[randomIndex];
+
+            // Отображаем карту
+            displayCard(card, deckCode);
+
+            // Уменьшаем count или удаляем карту
+            card.count--;
+            if (card.count <= 0) {
+                deck.splice(randomIndex, 1); // Удаляем карту из колоды
+                console.log(`✗ Card ${card.id} removed from ${deckCode} (count was 1)`);
+            } else {
+                console.log(`✓ Card ${card.id} count reduced to ${card.count}`);
+            }
+
+            console.log(`${deckCode} remaining: ${deck.length} cards`);
+        }
+
+        function displayCard(card, deckCode) {
+            // ID карты
+            document.getElementById('card-id').textContent = card.id;
+
+            // Текст карты
+            document.getElementById('card-text').textContent = card.text;
+
+            // Метаинформация
+            const metaDiv = document.getElementById('card-meta');
+            let metaHTML = '';
+
+            if (card.duration) {
+                metaHTML += `<span>⏱ Время: ${card.duration} сек</span>`;
+            }
+
+            if (card.location) {
+                metaHTML += `<span>📍 Место: ${card.location}</span>`;
+            }
+
+            if (card.temporary_nudity) {
+                metaHTML += `<span>👕 Частичное обнажение</span>`;
+            }
+
+            if (card.permanent_nudity) {
+                metaHTML += `<span>🔴 Снять одежду</span>`;
+            }
+
+            if (card.question) {
+                metaHTML += `<span>❓ Вопрос</span>`;
+            }
+
+            if (card.photo) {
+                metaHTML += `<span>📸 Нужна фото</span>`;
+            }
+
+            if (metaHTML) {
+                metaDiv.innerHTML = metaHTML;
+                metaDiv.style.display = 'block';
+            } else {
+                metaDiv.style.display = 'none';
+            }
+
+            // Устанавливаем дuration для таймера
+            gameState.timer_duration = card.duration || 0;
+             // Сбрасываем таймер на новое значение
+            const minutes = Math.floor(gameState.timer_duration / 60);
+            const seconds = gameState.timer_duration % 60;
+            document.getElementById('timer').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer').classList.remove('running');
+            
+        }
+
+        function showEmptyDeck(deckCode, type) {
+            // Определяем цвет и пол на основе кода колоды
+            const colorCode = deckCode.charAt(0); // 'G', 'Y', 'R', 'B'
+            const genderCode = deckCode.charAt(1); // 'M', 'F'
+            
+            // Получаем названия
+            const colorName = Object.values(colorMap).find(c => c.code === colorCode)?.name || deckCode;
+            const genderName = genderCode === 'M' ? 'М' : (genderCode === 'F' ? 'Ж' : '');
+            
+            document.getElementById('card-id').textContent = deckCode;
+            document.getElementById('card-text').innerHTML = 
+                `<div class="empty-deck-message">Карты в колоде <strong>${colorName}</strong> <strong>${genderName}</strong> закончились. Переходите на следующий уровень!</div>`;
+            document.getElementById('card-meta').style.display = 'none';
+            document.getElementById('timer').textContent = '00:00';
+        }
+
+        function startTimer() {
+            const timer = document.getElementById('timer');
+            if (gameState.timer_duration <= 0) return;
+
+            // Если таймер уже запущен — остановить и вернуть исходное значение, не запуская заново
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+                timer.classList.remove('running');
+
+                const minutes = Math.floor(gameState.timer_duration / 60);
+                const seconds = gameState.timer_duration % 60;
+                timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                return;
+            }
+
+            // Таймер остановлен — запускаем отсчет с исходного значения
+            let remaining = gameState.timer_duration;
+            timer.classList.add('running');
+
+            gameState.timer_interval = setInterval(() => {
+                remaining--;
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timer.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (remaining <= 0) {
+                    clearInterval(gameState.timer_interval);
+                    gameState.timer_interval = null;
+                    timer.classList.remove('running');
+                }
+            }, 1000);
+        }
+
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎮 EDGE Game loaded');
+        });
+    </script>
+</body>
+</html>
