@@ -839,6 +839,8 @@
             document.getElementById('card-meta').style.display = 'none';
             gameState.current_color = 'green';
             setLevel('green');
+
+            loadDecks();
         }
 
         function levelUpConfirm() {
@@ -896,7 +898,6 @@
         }
 
         function drawCard(type) {
-
             // Останавливаем старый таймер полностью
             if (gameState.timer_interval) {
                 clearInterval(gameState.timer_interval);
@@ -932,24 +933,45 @@
                 return;
             }
 
-            // Вытягиваем случайную карту
-            const randomIndex = Math.floor(Math.random() * deck.length);
-            const card = deck[randomIndex];
-
-            // Отображаем карту
-            displayCard(card, deckCode);
-
-            // Уменьшаем count или удаляем карту
-            card.count--;
-            if (card.count <= 0) {
-                deck.splice(randomIndex, 1); // Удаляем карту из колоды
-                console.log(`✗ Card ${card.id} removed from ${deckCode} (count was 1)`);
-            } else {
-                console.log(`✓ Card ${card.id} count reduced to ${card.count}`);
+            // ✅ ПРАВИЛЬНО: Считаем общее количество карт с учетом count
+            const totalCards = deck.reduce((sum, card) => sum + card.count, 0);
+            
+            if (totalCards === 0) {
+                showEmptyDeck(deckCode, type);
+                return;
             }
 
-            console.log(`${deckCode} remaining: ${deck.length} cards`);
+            // Генерируем случайное число от 0 до totalCards - 1
+            let randomPick = Math.floor(Math.random() * totalCards);
+            
+            // Находим карту, на которую попало случайное число
+            let selectedCard = null;
+            let selectedIndex = -1;
+            
+            for (let i = 0; i < deck.length; i++) {
+                if (randomPick < deck[i].count) {
+                    selectedCard = deck[i];
+                    selectedIndex = i;
+                    break;
+                }
+                randomPick -= deck[i].count;
+            }
+
+            // Отображаем карту
+            displayCard(selectedCard, deckCode);
+
+            // Уменьшаем count или удаляем карту
+            selectedCard.count--;
+            if (selectedCard.count <= 0) {
+                deck.splice(selectedIndex, 1);
+                console.log(`✗ Card ${selectedCard.id} removed from ${deckCode} (was last copy)`);
+            } else {
+                console.log(`✓ Card ${selectedCard.id} count reduced to ${selectedCard.count}`);
+            }
+
+            console.log(`${deckCode} remaining: ${deck.length} unique cards, ${totalCards - 1} total cards`);
         }
+
 
         function displayCard(card, deckCode) {
             // ID карты
