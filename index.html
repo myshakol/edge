@@ -5,12 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EDGE - Эротические фанты и покер на костях</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-button-color: #000000;
+            --tg-theme-button-text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
 
         html, body {
             width: 100%;
@@ -23,13 +40,6 @@
             height: 100dvh;
         }
 
-        body {
-            font-family: 'IBM Plex Mono', monospace;
-            background-color: #ffffff;
-            color: #000000;
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
 
         /* HEADER */
         header {
@@ -749,6 +759,18 @@
             'burgundy': { name: 'бордовая', hex: '#8b4a6d', code: 'B', type: 'основная' }
         };
 
+        // Telegram WebApp (может быть null в обычном браузере)
+        let tg = null;
+        if (window.Telegram && window.Telegram.WebApp) {
+            tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            console.log('Running inside Telegram');
+        } else {
+            console.log('Running in normal browser');
+        }
+
+
         async function loadDecks() {
             const deckCodes = ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2'];
             for (let code of deckCodes) {
@@ -811,6 +833,20 @@
             
             updateDeckSelection();
             loadDecks();
+
+            // ✅ Telegram MainButton (только если реально внутри Telegram)
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tg.MainButton.setText('Поделиться EDGE');
+                tg.MainButton.show();
+                tg.MainButton.onClick(() => {
+                    const shareText = `Я играю в EDGE!\nТекущий уровень: ${gameState.current_color}`;
+                    tg.openTelegramLink(
+                        `https://t.me/share/url?url=${encodeURIComponent('https://t.me/your_bot_name')}&text=${encodeURIComponent(shareText)}`
+                    );
+                });
+    }
+
+
         }
 
         function goHome() {
