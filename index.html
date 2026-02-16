@@ -842,9 +842,9 @@
 
         // ─── Theme toggle ───
         function getPreferredTheme() {
+            if (tg && tg.colorScheme) return tg.colorScheme;
             const saved = localStorage.getItem('edge-theme');
             if (saved) return saved;
-            if (tg && tg.colorScheme) return tg.colorScheme;
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 return 'dark';
             }
