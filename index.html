@@ -77,6 +77,19 @@
             );
         }
 
+        /* Дополнительный «запас» только на мобильных в Telegram */
+        @media (max-width: 768px) {
+            html[data-env="telegram"] .home-page,
+            html[data-env="telegram"] .game-wrapper {
+                padding-top: calc(
+                    var(--tg-content-safe-area-top, 0px) +
+                    env(safe-area-inset-top, 0px) +
+                    12px
+                );
+            }
+        }        
+
+
         html, body {
             width: 100%;
             height: 100dvh;
