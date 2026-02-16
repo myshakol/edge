@@ -879,6 +879,17 @@
             tg = window.Telegram.WebApp;
             tg.ready();
             tg.expand();
+
+            // Fullscreen mode (Bot API 8.0+) — убирает шапку TG
+            if (tg.isVersionAtLeast && tg.isVersionAtLeast('8.0')) {
+                try {
+                    tg.requestFullscreen();
+                    tg.setHeaderColor('#000000'); // для контраста статусбара
+                } catch(e) {
+                    console.warn('Fullscreen not supported:', e);
+                }
+            }
+
             console.log('Running inside Telegram');
         } else {
             console.log('Running in normal browser');
