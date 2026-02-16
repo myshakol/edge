@@ -68,13 +68,11 @@
         html[data-env="telegram"] .home-page,
         html[data-env="telegram"] .game-wrapper {
             padding-top: calc(
-                var(--tg-viewport-content-safe-area-inset-top, 0px) +
-                var(--tg-viewport-safe-area-inset-top, 0px) +
+                var(--tg-content-safe-area-top, 0px) +
                 env(safe-area-inset-top, 0px)
             );
             padding-bottom: calc(
-                var(--tg-viewport-content-safe-area-inset-bottom, 0px) +
-                var(--tg-viewport-safe-area-inset-bottom, 0px) +
+                var(--tg-content-safe-area-bottom, 0px) +
                 env(safe-area-inset-bottom, 0px)
             );
         }
@@ -911,7 +909,27 @@
                         if (tg.viewport.supportsExpand && tg.viewport.isExpanded === false) {
                             tg.viewport.expand();
                         }
-                        tg.viewport.enable(); // проставит --tg-viewport-*-inset-*
+                        tg.viewport.enable();
+
+                        // Запрашиваем safe area, которая учитывает именно телеграмовские контролы
+                        if (tg.requestContentSafeArea) {
+                            tg.requestContentSafeArea();
+                        }
+
+                        if (tg.onEvent) {
+                            tg.onEvent('content_safe_area_changed', (event) => {
+                                const insets = event?.insets || event; // SDK может отдавать по-разному
+                                if (!insets) return;
+                                document.documentElement.style.setProperty(
+                                    '--tg-content-safe-area-top',
+                                    insets.top + 'px'
+                                );
+                                document.documentElement.style.setProperty(
+                                    '--tg-content-safe-area-bottom',
+                                    insets.bottom + 'px'
+                                );
+                            });
+                        }
                     } catch (e) {
                         console.warn('Viewport safe area not supported:', e);
                     }
