@@ -271,11 +271,23 @@
         }
 
         /* GAME PAGE STYLES */
+
+
         .game-wrapper {
             display: none;
             flex-direction: column;
             height: 100dvh;
             padding: 20px;
+            padding-top: calc(
+                20px +
+                var(--tg-viewport-content-safe-area-inset-top, 0px) +
+                var(--tg-viewport-safe-area-inset-top, 0px)
+            );
+            padding-bottom: calc(
+                20px +
+                var(--tg-viewport-content-safe-area-inset-bottom, 0px) +
+                var(--tg-viewport-safe-area-inset-bottom, 0px)
+            );
             overflow: hidden;
         }
 
