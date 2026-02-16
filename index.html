@@ -12,6 +12,7 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         html {
             touch-action: manipulation;
@@ -57,6 +58,7 @@
             color: var(--text);
             line-height: 1.5;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
 
@@ -1329,6 +1331,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🎮 EDGE Game loaded');
         });
+
+        // Disable double-tap zoom on iOS
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
     </script>
 </body>
 </html>
