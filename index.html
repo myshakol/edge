@@ -65,11 +65,6 @@
             overflow: hidden;
         }
 
-        .main-wrapper {
-            display: flex;
-            height: 100dvh;
-        }
-
 
         /* HEADER */
         header {
@@ -256,14 +251,14 @@
             font-size: 13px;
             color: var(--text);
             text-decoration: none;
-            border-bottom: 1px solid 1px solid var(--text);
+            border-bottom: 1px solid var(--text);
             padding-bottom: 3px;
             transition: all 0.2s;
         }
 
         .footer-links a:hover {
-            background-color: var(--text);
-            color: var(--btn-hover-bg);
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         /* GAME PAGE STYLES */
@@ -314,8 +309,8 @@
         }
 
         .game-header-btn:hover {
-            background-color: var(--btn-text);
-            color: var(--btn-hover-bg);
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .card-container {
@@ -401,19 +396,6 @@
             margin-right: 6px;
         }
 
-        /*.card-meta span {
-            display: block;
-            margin: 4px 0;
-        }
-
-        .card-meta svg {
-            
-            
-            display: inline-block;
-            vertical-align: text-bottom;
-            margin-right: 6px;
-        }*/
-
         .timer-container {
             text-align: center;
             margin-top: auto;
@@ -472,13 +454,13 @@
         }
 
         .color-btn:hover {
-            background-color: var(--text);
-            color: var(--btn-hover-bg);
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .color-btn.active {
-            background-color: var(--text);
-            color: var(--btn-hover-bg);
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .control-buttons {
@@ -1228,31 +1210,6 @@
             if (card.photo) {
                 metaHTML += `<span>${icons.photo} Фото/видео съёмка</span>`;
             }
-
-
-            /*if (card.duration) {
-                metaHTML += `<span>⏱ Время: ${card.duration} сек</span>`;
-            }
-
-            if (card.location) {
-                metaHTML += `<span>📍 Место: ${card.location}</span>`;
-            }
-
-            if (card.temporary_nudity) {
-                metaHTML += `<span>👕 Частичное обнажение</span>`;
-            }
-
-            if (card.permanent_nudity) {
-                metaHTML += `<span>🔴 Снять одежду</span>`;
-            }
-
-            if (card.question) {
-                metaHTML += `<span>❓ Вопрос</span>`;
-            }
-
-            if (card.photo) {
-                metaHTML += `<span>📸 Нужна фото</span>`;
-            }*/
 
             if (metaHTML) {
                 metaDiv.innerHTML = metaHTML;
