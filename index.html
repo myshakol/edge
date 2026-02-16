@@ -904,6 +904,20 @@
 
         applyTheme(getPreferredTheme());
 
+        // ─── Haptic Feedback ───
+        function triggerHaptic(style) {
+            if (tg && tg.HapticFeedback) {
+                try { tg.HapticFeedback.impactOccurred(style || 'light'); } catch(e) {}
+            }
+        }
+
+        function triggerHapticNotification(type) {
+            if (tg && tg.HapticFeedback) {
+                try { tg.HapticFeedback.notificationOccurred(type || 'success'); } catch(e) {}
+            }
+        }
+
+
         async function loadDecks() {
             const deckCodes = ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2'];
             for (let code of deckCodes) {
@@ -990,10 +1004,12 @@
         }
 
         function closeModal() {
+            triggerHaptic('light');
             document.getElementById('modal').classList.remove('active');
         }
 
         function confirmGoHome() {
+            triggerHaptic('medium');
             // Полностью сбрасываем игру в нулевое состояние
             resetGame();
 
@@ -1003,6 +1019,7 @@
         }
 
         function resetGameConfirm() {
+            triggerHaptic('light');
             document.getElementById('modal').classList.add('active');
             document.getElementById('modal-text').textContent = 'Вы уверены, что хотите перезапустить игру?';
             
@@ -1033,6 +1050,7 @@
         }
 
         function levelUpConfirm() {
+            triggerHaptic('light');
             document.getElementById('modal').classList.add('active');
             document.getElementById('modal-text').textContent = 'Перейти на следующий уровень?';
             
@@ -1055,6 +1073,7 @@
         }
 
         function setLevel(level) {
+            triggerHapticNotification('success');
             gameState.current_color = level;
             
             document.querySelectorAll('.color-btn').forEach(btn => {
@@ -1087,6 +1106,7 @@
         }
 
         function drawCard(type) {
+             triggerHaptic('light');
             // Останавливаем старый таймер полностью
             if (gameState.timer_interval) {
                 clearInterval(gameState.timer_interval);
@@ -1267,6 +1287,7 @@
         }
 
         function startTimer() {
+            triggerHaptic('soft');
             const timer = document.getElementById('timer');
             if (gameState.timer_duration <= 0) return;
 
