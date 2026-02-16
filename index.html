@@ -881,12 +881,15 @@
             tg.expand();
 
             // Fullscreen mode (Bot API 8.0+) — убирает шапку TG
-            if (tg.isVersionAtLeast && tg.isVersionAtLeast('8.0')) {
+            if (tg.viewport && tg.viewport.supportsExpand && tg.viewport.isExpanded === false) {
+                tg.viewport.expand();
+            }
+
+            if (tg.viewport && tg.viewport.isSupported) {
                 try {
-                    tg.requestFullscreen();
-                    tg.setHeaderColor('#000000'); // для контраста статусбара
-                } catch(e) {
-                    console.warn('Fullscreen not supported:', e);
+                    tg.viewport.enable(); // Telegram сам проставит --tg-viewport-*-inset-* в CSS
+                } catch (e) {
+                    console.warn('Viewport safe area not supported:', e);
                 }
             }
 
