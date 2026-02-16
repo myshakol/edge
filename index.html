@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-env="web">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -58,14 +58,25 @@
         }
 
         /* Safe area for Telegram fullscreen + iPhone notch in browser */
-        .home-page {
-            padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px) + env(safe-area-inset-top, 0px));
-            padding-bottom: env(safe-area-inset-bottom, 0px);
+        .home-page,
+        .game-wrapper {
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
-        .game-wrapper {
-            padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px) + env(safe-area-inset-top, 0px));
-            padding-bottom: calc(var(--tg-safe-area-inset-bottom, 0px) + env(safe-area-inset-bottom, 0px));
+        /* Только внутри Telegram учитываем safe area из viewport API + env() */
+        html[data-env="telegram"] .home-page,
+        html[data-env="telegram"] .game-wrapper {
+            padding-top: calc(
+                var(--tg-viewport-content-safe-area-inset-top, 0px) +
+                var(--tg-viewport-safe-area-inset-top, 0px) +
+                env(safe-area-inset-top, 0px)
+            );
+            padding-bottom: calc(
+                var(--tg-viewport-content-safe-area-inset-bottom, 0px) +
+                var(--tg-viewport-safe-area-inset-bottom, 0px) +
+                env(safe-area-inset-bottom, 0px)
+            );
         }
 
         html, body {
@@ -874,29 +885,46 @@
         };
 
         // Telegram WebApp (может быть null в обычном браузере)
+
         let tg = null;
-        if (window.Telegram && window.Telegram.WebApp) {
-            tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
 
-            // Fullscreen mode (Bot API 8.0+) — убирает шапку TG
-            if (tg.viewport && tg.viewport.supportsExpand && tg.viewport.isExpanded === false) {
-                tg.viewport.expand();
-            }
+        (function initTelegram() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                tg = window.Telegram.WebApp;
 
-            if (tg.viewport && tg.viewport.isSupported) {
+                // Помечаем окружение
+                document.documentElement.setAttribute('data-env', 'telegram');
+
+                // Готовим WebApp
                 try {
-                    tg.viewport.enable(); // Telegram сам проставит --tg-viewport-*-inset-* в CSS
-                } catch (e) {
-                    console.warn('Viewport safe area not supported:', e);
-                }
-            }
+                    tg.ready();
+                } catch (e) {}
 
-            console.log('Running inside Telegram');
-        } else {
-            console.log('Running in normal browser');
-        }
+                // Старый expand (для совместимости)
+                try {
+                    tg.expand();
+                } catch (e) {}
+
+                // Новый viewport API: полноэкранный режим + safe area
+                if (tg.viewport && tg.viewport.isSupported) {
+                    try {
+                        if (tg.viewport.supportsExpand && tg.viewport.isExpanded === false) {
+                            tg.viewport.expand();
+                        }
+                        tg.viewport.enable(); // проставит --tg-viewport-*-inset-*
+                    } catch (e) {
+                        console.warn('Viewport safe area not supported:', e);
+                    }
+                }
+
+                console.log('Running inside Telegram');
+            } else {
+                // Обычный браузер
+                document.documentElement.setAttribute('data-env', 'web');
+                console.log('Running in normal browser');
+            }
+        })();
+
 
         // ─── Theme toggle ───
         function getPreferredTheme() {
