@@ -14,19 +14,47 @@
         }
 
         :root {
-            --tg-theme-bg-color: #ffffff;
-            --tg-theme-text-color: #000000;
-            --tg-theme-button-color: #000000;
-            --tg-theme-button-text-color: #ffffff;
+            --bg: #ffffff;
+            --text: #000000;
+            --text-muted: #666666;
+            --border: #000000;
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+            --btn-hover-bg: #000000;
+            --btn-hover-text: #ffffff;
+            --card-bg: #ffffff;
+            --collapsible-content-bg: #f9f9f9;
+            --collapsible-hover-bg: #f5f5f5;
+            --timer-border: #dddddd;
+            --meta-border: #cccccc;
+            --modal-overlay: rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a1a;
+            --text: #e0e0e0;
+            --text-muted: #999999;
+            --border: #e0e0e0;
+            --btn-bg: #1a1a1a;
+            --btn-text: #e0e0e0;
+            --btn-hover-bg: #e0e0e0;
+            --btn-hover-text: #1a1a1a;
+            --card-bg: #242424;
+            --collapsible-content-bg: #2a2a2a;
+            --collapsible-hover-bg: #333333;
+            --timer-border: #555555;
+            --meta-border: #555555;
+            --modal-overlay: rgba(0,0,0,0.7);
         }
 
         body {
             font-family: 'IBM Plex Mono', monospace;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
+            background-color: var(--bg);
+            color: var(--text);
             line-height: 1.5;
             overflow-x: hidden;
         }
+
 
 
         html, body {
@@ -47,7 +75,7 @@
             justify-content: space-between;
             align-items: flex-start;
             padding: 30px 40px;
-            border-bottom: 2px solid #000000;
+            border-bottom: 2px solid var(--border);
         }
 
         .header-left h1 {
@@ -60,7 +88,7 @@
         .header-left p {
             font-size: 12px;
             font-weight: 400;
-            color: #666666;
+            color: var(--text-muted);
             letter-spacing: 1px;
         }
 
@@ -68,7 +96,9 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            text-decoration: underline;
+            text-decoration: none;
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 2px;
         }
 
         /* MAIN CONTENT */
@@ -84,9 +114,9 @@
             width: 100%;
             padding: 16px;
             margin: 20px 0;
-            border: 2px solid #000000;
-            background-color: #ffffff;
-            color: #000000;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 16px;
             font-weight: 500;
@@ -97,8 +127,8 @@
         }
 
         .btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .btn-play {
@@ -112,9 +142,9 @@
             width: 100%;
             padding: 12px;
             margin: 30px 0 0 0;    
-            border: 2px solid #000000;
-            background-color: #ffffff;
-            color: #000000;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 14px;
             font-weight: 500;
@@ -125,21 +155,21 @@
 
 
         .collapsible:hover {
-            background-color: #f5f5f5;
+            background-color: var(--collapsible-hover-bg);
         }
 
         .collapsible.active {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);;
+            color: var(--btn-hover-text);
         }
 
         .collapsible-content {
             display: none;
             padding: 20px;
             margin: 0 0 30px 0;  
-            border: 2px solid #000000;
+            border: 2px solid var(--border);
             border-top: none;
-            background-color: #f9f9f9;
+            background-color: var(--collapsible-content-bg);
         }
 
         .collapsible-content.active {
@@ -172,7 +202,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #000000;
+            accent-color: var(--text);
         }
 
         .checkbox-item label {
@@ -203,7 +233,7 @@
         .radio-item input[type="radio"] {
             margin-right: 8px;
             cursor: pointer;
-            accent-color: #000000;
+            accent-color: var(--text);
         }
 
         .radio-item label {
@@ -222,16 +252,16 @@
 
         .footer-links a {
             font-size: 13px;
-            color: #000000;
+            color: var(--text);
             text-decoration: none;
-            border-bottom: 1px solid #000000;
+            border-bottom: 1px solid 1px solid var(--text);
             padding-bottom: 3px;
             transition: all 0.2s;
         }
 
         .footer-links a:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--text);
+            color: var(--btn-hover-bg);
         }
 
         /* GAME PAGE STYLES */
@@ -253,7 +283,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding: 10px 0;
-            border-bottom: 2px solid #000000;
+            border-bottom: 2px solid var(--border);
         }
 
         .game-header-left {
@@ -270,8 +300,9 @@
         .game-header-btn {
             width: 40px;
             height: 40px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             cursor: pointer;
             font-size: 16px;
             display: flex;
@@ -281,8 +312,8 @@
         }
 
         .game-header-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-text);
+            color: var(--btn-hover-bg);
         }
 
         .card-container {
@@ -300,9 +331,9 @@
         .card {
             width: 100%;
             max-width: 600px;
-            border: 3px solid #000000;
+            border: 3px solid var(--border);
             padding: 20px;
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -318,7 +349,7 @@
             align-items: flex-start;
             margin-bottom: 10px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #000000;
+            border-bottom: 2px solid var(--border);
             font-size: 10px;
             font-weight: 600;
             letter-spacing: 0.5px;
@@ -349,10 +380,10 @@
 
         .card-meta {
             font-size: 12px;
-            color: #666666;
+            color: var(--text-muted);
             margin: 20px 0;
             padding: 10px;
-            border: 1px dashed #cccccc;
+            border: 1px dashed var(--meta-border);
             text-align: left;
         }
 
@@ -392,13 +423,13 @@
             letter-spacing: 2px;
             cursor: pointer;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--timer-border);
             display: inline-block;
             transition: all 0.2s;
         }
 
         .timer:hover {
-            border-color: #000000;
+            border-color: var(--border);
         }
 
         .timer.running {
@@ -410,8 +441,8 @@
             position: fixed;
             bottom: 180px;
             right: 30px;
-            background-color: #ffffff;
-            border: 2px solid #000000;
+            background-color: var(--bg);
+            border: 2px solid var(--border);
             padding: 12px;
             gap: 8px;
             z-index: 500;
@@ -425,9 +456,9 @@
         .color-btn {
             width: 45px;
             height: 45px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
-            color: #000000;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 11px;
             font-weight: 600;
@@ -439,13 +470,13 @@
         }
 
         .color-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--text);
+            color: var(--btn-hover-bg);
         }
 
         .color-btn.active {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--text);
+            color: var(--btn-hover-bg);
         }
 
         .control-buttons {
@@ -459,9 +490,9 @@
         .level-up-btn {
             flex: 1;
             padding: 14px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
-            color: #000000;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 13px;
             font-weight: 600;
@@ -470,15 +501,16 @@
         }
 
         .level-up-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .palette-btn {
             width: 50px;
             height: 50px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -488,8 +520,8 @@
         }
 
         .palette-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .card-buttons {
@@ -502,9 +534,9 @@
         .card-btn {
             flex: 1;
             padding: 14px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
-            color: #000000;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             font-family: 'IBM Plex Mono', monospace;
             font-size: 13px;
             font-weight: 600;
@@ -514,8 +546,8 @@
         }
 
         .card-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
 
         .card-btn.disabled {
@@ -528,6 +560,36 @@
         .color-yellow { color: #c9a05d; }
         .color-red { color: #b84a50; }
         .color-burgundy { color: #8b4a6d; }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--text);
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        [data-theme="dark"] .theme-toggle::after {
+            transform: translateX(20px);
+        }
+
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -570,7 +632,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: var(--modal-overlay);
             align-items: center;
             justify-content: center;
         }
@@ -580,8 +642,8 @@
         }
 
         .modal-content {
-            background-color: #ffffff;
-            border: 3px solid #000000;
+            background-color: var(--card-bg);
+            border: 3px solid var(--border);
             padding: 40px;
             max-width: 400px;
             text-align: center;
@@ -601,8 +663,9 @@
         .modal-buttons button {
             flex: 1;
             padding: 12px;
-            border: 2px solid #000000;
-            background-color: #ffffff;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
             cursor: pointer;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 13px;
@@ -610,9 +673,10 @@
         }
 
         .modal-buttons button:hover {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
         }
+
 
         .empty-deck-message {
             text-align: center;
@@ -630,7 +694,10 @@
                 <h1>EDGE</h1>
                 <p>эротические фанты и покер на костях</p>
             </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="theme-toggle" onclick="toggleTheme()" title="Переключить тему"></div>
             <div class="lang-selector" onclick="alert('EN version coming soon')">ru|eng</div>
+        </div>
         </header>
 
         <div class="container">
@@ -676,7 +743,10 @@
     <!-- GAME PAGE -->
     <div id="game-page" class="game-wrapper">
         <div class="game-header">
-            <div class="game-header-left">EDGE</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="game-header-left">EDGE</div>
+                <div class="theme-toggle" onclick="toggleTheme()" title="Переключить тему"></div>
+            </div>
             <div class="game-header-buttons">
                 <button class="game-header-btn" onclick="goHome()">⌂</button>
                 <button class="game-header-btn" onclick="resetGameConfirm()">⟲</button>
@@ -688,9 +758,9 @@
                 <div class="card-header">
                     <div>
                         <span id="card-color" class="card-color color-green">зеленая</span>
-                        <span id="card-type" style="font-size: 10px; color: #666666;">основная</span>
+                        <span id="card-type" style="font-size: 10px; color: var(--text-muted);">основная</span>
                     </div>
-                    <div style="font-size: 10px; color: #666666; text-align: right;">
+                    <div style="font-size: 10px; color: var(--text-muted); text-align: right;">
                         <span id="card-id">--</span>
                     </div>
                 </div>
@@ -770,6 +840,30 @@
             console.log('Running in normal browser');
         }
 
+        // ─── Theme toggle ───
+        function getPreferredTheme() {
+            const saved = localStorage.getItem('edge-theme');
+            if (saved) return saved;
+            if (tg && tg.colorScheme) return tg.colorScheme;
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem('edge-theme', next);
+            triggerHaptic('light');
+        }
+
+        applyTheme(getPreferredTheme());
 
         async function loadDecks() {
             const deckCodes = ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2'];
@@ -835,7 +929,7 @@
             loadDecks();
 
             // ✅ Telegram MainButton (только если реально внутри Telegram)
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            /*if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 tg.MainButton.setText('Поделиться EDGE');
                 tg.MainButton.show();
                 tg.MainButton.onClick(() => {
@@ -844,7 +938,7 @@
                         `https://t.me/share/url?url=${encodeURIComponent('https://t.me/your_bot_name')}&text=${encodeURIComponent(shareText)}`
                     );
                 });
-    }
+            }*/
 
 
         }
