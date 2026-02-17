@@ -599,6 +599,7 @@
             position: relative;
             transition: all 0.3s;
             flex-shrink: 0;
+            overflow: hidden;
         }
 
         .theme-toggle::after {
@@ -611,6 +612,7 @@
             top: 2px;
             left: 2px;
             transition: transform 0.3s;
+            pointer-events: none;
         }
 
         [data-theme="dark"] .theme-toggle::after {
