@@ -1192,6 +1192,9 @@
         function setLevel(level) {
             triggerHapticNotification('success');
             gameState.current_color = level;
+
+            // Скрыть палитру после выбора
+            document.getElementById('color-selector').classList.remove('active');
             
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('active');
