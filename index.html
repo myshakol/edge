@@ -361,8 +361,7 @@
         .card-container {
             flex: 1;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
             margin: 0;
             padding: 0;
             min-height: 0;
@@ -379,8 +378,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            min-height: auto;
+            justify-content: flex-start;
+            min-height: 0;
             overflow-y: auto;
         }
 
@@ -553,12 +552,26 @@
             color: var(--btn-hover-text);
         }
 
+        /* Низ экрана: общий блок для всех кнопок, прижат к safe area */
+        .game-footer {
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
         .card-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 30px;
+            margin-top: 0;
             justify-content: center;
         }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+            align-items: center;
+        }        
 
         .card-btn {
             flex: 1;
@@ -866,16 +879,17 @@
                 </div>
             </div>
         </div>
+        <div class="game-footer">        
+            <div class="card-buttons">
+                <button class="card-btn" id="btn-male" onclick="drawCard('male')">карта М</button>
+                <button class="card-btn" id="btn-female" onclick="drawCard('female')">карта Ж</button>
+                <button class="card-btn" id="btn-extra" onclick="drawCard('extra')" style="display: none;">карта Ж ○</button>
+            </div>
 
-        <div class="card-buttons">
-            <button class="card-btn" id="btn-male" onclick="drawCard('male')">карта М</button>
-            <button class="card-btn" id="btn-female" onclick="drawCard('female')">карта Ж</button>
-            <button class="card-btn" id="btn-extra" onclick="drawCard('extra')" style="display: none;">карта Ж ○</button>
-        </div>
-
-        <div class="control-buttons">
-            <button class="level-up-btn" onclick="levelUpConfirm()">уровень +</button>
-            <button class="palette-btn" onclick="toggleColorSelector()">⊕</button>
+            <div class="control-buttons">
+                <button class="level-up-btn" onclick="levelUpConfirm()">уровень +</button>
+                <button class="palette-btn" onclick="toggleColorSelector()">⊕</button>
+            </div>
         </div>
 
         <div class="color-selector-container" id="color-selector">
