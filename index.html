@@ -60,36 +60,29 @@
         }
 
         /* Safe area for Telegram fullscreen + iPhone notch in browser */
+        /* Базово — без отступов, и в браузере ничего лишнего нет */
         .home-page,
         .game-wrapper {
             padding-top: 0;
             padding-bottom: 0;
         }
 
-        /* Только внутри Telegram учитываем safe area из viewport API + env() */
+        /* Только внутри Telegram Mini App используем их safe area */
         html[data-env="telegram"] .home-page,
         html[data-env="telegram"] .game-wrapper {
-            padding-top: calc(
-                var(--tg-content-safe-area-top, 0px) +
-                env(safe-area-inset-top, 0px)
-            );
-            padding-bottom: calc(
-                var(--tg-content-safe-area-bottom, 0px) +
-                env(safe-area-inset-bottom, 0px)
-            );
+            padding-top: var(--tg-content-safe-area-top, 0px);
+            padding-bottom: var(--tg-content-safe-area-bottom, 0px);
         }
 
-        /* Дополнительный «запас» только на мобильных в Telegram */
+        /* Дополнительный запас сверху только в Telegram, только на мобилках */
         @media (max-width: 768px) {
             html[data-env="telegram"] .home-page,
             html[data-env="telegram"] .game-wrapper {
                 padding-top: calc(
-                    var(--tg-content-safe-area-top, 0px) +
-                    env(safe-area-inset-top, 0px) +
-                    36px
+                    var(--tg-content-safe-area-top, 0px) + 36px
                 );
             }
-        }        
+        }       
 
 
         html, body {
