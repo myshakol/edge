@@ -732,21 +732,6 @@
         }
 
         /* Fix sticky hover on iOS — active state for tap feedback */
-        .btn:active,
-        .card-btn:active,
-        .game-header-btn:active,
-        .level-up-btn:active,
-        .palette-btn:active,
-        .color-btn:active,
-        .collapsible:active,
-        .modal-buttons button:active {
-            background-color: var(--btn-hover-bg);
-            color: var(--btn-hover-text);
-            transform: scale(0.96);
-            transition: all 0.05s;
-        }
-
-        /* Remove sticky :hover on touch devices */
         @media (hover: none) {
             .btn:hover,
             .card-btn:hover,
@@ -757,13 +742,29 @@
             .collapsible:hover,
             .modal-buttons button:hover,
             .footer-links a:hover {
-                background-color: inherit;
-                color: inherit;
+                background-color: var(--btn-bg);
+                color: var(--btn-text);
             }
 
             .collapsible.active:hover {
                 background-color: var(--btn-hover-bg);
                 color: var(--btn-hover-text);
+            }
+
+            /* Active tap feedback — MUST come AFTER :hover to override it */
+            .btn:active,
+            .card-btn:active,
+            .game-header-btn:active,
+            .level-up-btn:active,
+            .palette-btn:active,
+            .color-btn:active,
+            .collapsible:active,
+            .modal-buttons button:active,
+            .footer-links a:active {
+                background-color: var(--btn-hover-bg) !important;
+                color: var(--btn-hover-text) !important;
+                transform: scale(0.96);
+                transition: all 0.05s;
             }
         }
 
