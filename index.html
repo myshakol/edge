@@ -1195,6 +1195,18 @@
 
             // Скрыть палитру после выбора
             document.getElementById('color-selector').classList.remove('active');
+
+            // Сбросить карту на начальный текст
+            document.getElementById('card-text').textContent = 'Нажми кнопку "карта М" или "карта Ж" чтобы вытянуть задание';
+            document.getElementById('card-id').textContent = '--';
+            document.getElementById('card-meta').style.display = 'none';
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('timer').classList.remove('running');
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            gameState.timer_duration = 0;            
             
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('active');
