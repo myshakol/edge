@@ -603,29 +603,38 @@
         }
 
         /* Круг рисуем как внутренний элемент без всяких overflow/масок */
+        .theme-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 999px;
+            background-color: var(--btn-bg);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            transition: background-color 0.25s, border-color 0.25s;
+        }
+
+        /* Круг — чуть больше и поднимаем его на 1px */
         .theme-toggle::before {
             content: '';
             position: absolute;
-            top: 2px;
+            top: 1px;      /* было 2px */
             left: 2px;
-            width: 16px;
-            height: 16px;
+            width: 18px;   /* было 16px */
+            height: 18px;  /* было 16px */
             border-radius: 50%;
             background-color: var(--text);
             transition: transform 0.25s, background-color 0.25s;
             pointer-events: none;
         }
 
-        /* Включённая позиция — круг справа */
+        /* Сдвиг вправо под новый размер круга */
         .theme-toggle.theme-toggle-on::before {
-            transform: translateX(20px);
+            transform: translateX(20px); /* можно оставить 20, визуально ровно */
         }
 
-        /* Для тёмной темы можно слегка менять фон, но без градиентов и масок */
-        [data-theme="dark"] .theme-toggle {
-            background-color: var(--btn-bg);
-            border-color: var(--border);
-        }
 
 
         /* RESPONSIVE */
