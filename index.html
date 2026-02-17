@@ -592,38 +592,42 @@
         .theme-toggle {
             width: 44px;
             height: 24px;
-            border-radius: 12px;
-            border: 2px solid var(--border);
+            border-radius: 999px;
             background-color: var(--btn-bg);
+            border: 2px solid var(--border);
             cursor: pointer;
             position: relative;
-            transition: all 0.3s;
             flex-shrink: 0;
-            overflow: hidden;
-            /* фиксы для iOS Safari */
-            -webkit-mask-image: -webkit-radial-gradient(white, black);
-            mask-image: radial-gradient(white, black);
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
-        .theme-toggle::after {
+        /* Круг не отдельным блоком, а через box-shadow – без квадратных артефактов */
+        .theme-toggle::before {
             content: '';
             position: absolute;
+            top: 2px;
+            left: 2px;
             width: 16px;
             height: 16px;
             border-radius: 50%;
             background-color: var(--text);
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s;
+            box-shadow: 0 0 0 0 var(--text);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
             pointer-events: none;
         }
 
-        [data-theme="dark"] .theme-toggle::after {
+        /* Тёмная тема – фон меняется, но круг остаётся чётким */
+        [data-theme="dark"] .theme-toggle {
+            background-color: var(--btn-bg);
+            border-color: var(--border);
+        }
+
+
+        [data-theme="dark"] .theme-toggle-on::before,
+        [data-theme="light"] .theme-toggle-on::before {
             transform: translateX(20px);
         }
+
 
 
         /* RESPONSIVE */
@@ -986,9 +990,24 @@
             applyTheme(next);
             localStorage.setItem('edge-theme', next);
             triggerHaptic('light');
+
+            // Обновить визуальное состояние свитча
+            document.querySelectorAll('.theme-toggle').forEach(el => {
+                if (next === 'dark') {
+                    el.classList.add('theme-toggle-on');
+                } else {
+                    el.classList.remove('theme-toggle-on');
+                }
+            });
         }
 
         applyTheme(getPreferredTheme());
+        document.addEventListener('DOMContentLoaded', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            document.querySelectorAll('.theme-toggle').forEach(el => {
+                if (current === 'dark') el.classList.add('theme-toggle-on');
+            });
+        });
 
         // ─── Haptic Feedback ───
         function triggerHaptic(style) {
