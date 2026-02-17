@@ -600,6 +600,12 @@
             transition: all 0.3s;
             flex-shrink: 0;
             overflow: hidden;
+            /* фиксы для iOS Safari */
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+
         }
 
         .theme-toggle::after {
