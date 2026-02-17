@@ -598,36 +598,34 @@
             cursor: pointer;
             position: relative;
             flex-shrink: 0;
-            transition: background-color 0.3s, border-color 0.3s;
+            transition: background-color 0.25s, border-color 0.25s;
+            box-sizing: border-box;
         }
 
-        /* Круг не отдельным блоком, а через box-shadow – без квадратных артефактов */
+        /* Круг рисуем как внутренний элемент без всяких overflow/масок */
         .theme-toggle::before {
             content: '';
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background-color: var(--text);
-            box-shadow: 0 0 0 0 var(--text);
-            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            transition: transform 0.25s, background-color 0.25s;
             pointer-events: none;
         }
 
-        /* Тёмная тема – фон меняется, но круг остаётся чётким */
+        /* Включённая позиция — круг справа */
+        .theme-toggle.theme-toggle-on::before {
+            transform: translateX(18px);
+        }
+
+        /* Для тёмной темы можно слегка менять фон, но без градиентов и масок */
         [data-theme="dark"] .theme-toggle {
             background-color: var(--btn-bg);
             border-color: var(--border);
         }
-
-
-        [data-theme="dark"] .theme-toggle-on::before,
-        [data-theme="light"] .theme-toggle-on::before {
-            transform: translateX(20px);
-        }
-
 
 
         /* RESPONSIVE */
@@ -991,7 +989,6 @@
             localStorage.setItem('edge-theme', next);
             triggerHaptic('light');
 
-            // Обновить визуальное состояние свитча
             document.querySelectorAll('.theme-toggle').forEach(el => {
                 if (next === 'dark') {
                     el.classList.add('theme-toggle-on');
@@ -1008,6 +1005,7 @@
                 if (current === 'dark') el.classList.add('theme-toggle-on');
             });
         });
+
 
         // ─── Haptic Feedback ───
         function triggerHaptic(style) {
