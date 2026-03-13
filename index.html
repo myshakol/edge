@@ -926,6 +926,38 @@
             setFullscreenExtraOffset(false);
         }
 
+        function isTelegramMobilePlatform() {
+            if (!tg) return false;
+
+            const platform = String(tg.platform || '').toLowerCase();
+
+            return [
+                'ios',
+                'android',
+                'android_x',
+                'weba',
+                'webk'
+            ].includes(platform);
+        }
+
+        function getTelegramExpandedState() {
+            if (!tg) return false;
+
+            if (typeof tg.isExpanded === 'boolean') {
+                return tg.isExpanded;
+            }
+
+            if (tg.viewport && typeof tg.viewport.isExpanded === 'boolean') {
+                return tg.viewport.isExpanded;
+            }
+
+            if (tg.viewport && typeof tg.viewport.expansion === 'boolean') {
+                return tg.viewport.expansion;
+            }
+
+            return false;
+        }
+
         function getTelegramFullscreenState() {
             if (!tg) return false;
 
@@ -937,8 +969,24 @@
                 return tg.viewport.isFullscreen;
             }
 
+            if (tg.viewport && typeof tg.viewport.fullscreen === 'boolean') {
+                return tg.viewport.fullscreen;
+            }
+
             return false;
         }
+
+        function shouldApplyTopExtraOffset() {
+            if (!tg) return false;
+
+            const isMobile = isTelegramMobilePlatform();
+            const isExpanded = getTelegramExpandedState();
+            const isFullscreen = getTelegramFullscreenState();
+
+            return isMobile && isExpanded && !isFullscreen;
+        }
+
+
 
         function applyTelegramInsets() {
             if (!tg) {
@@ -956,21 +1004,23 @@
                 tg.safeArea ||
                 {};
 
-            const top = Number(
-                contentInsets.top ??
-                safeInsets.top ??
-                0
-            );
-
-            const bottom = Number(
-                contentInsets.bottom ??
-                safeInsets.bottom ??
-                0
-            );
+            const top = Number(contentInsets.top ?? safeInsets.top ?? 0);
+            const bottom = Number(contentInsets.bottom ?? safeInsets.bottom ?? 0);
 
             setAppInsets(top, bottom);
-            setFullscreenExtraOffset(getTelegramFullscreenState());
+            setFullscreenExtraOffset(shouldApplyTopExtraOffset());
+
+            console.log('TG STATE', {
+                platform: tg?.platform,
+                isExpanded: tg?.isExpanded,
+                isFullscreen: tg?.isFullscreen,
+                viewport: tg?.viewport,
+                safeAreaInset: tg?.safeAreaInset,
+                contentSafeAreaInset: tg?.contentSafeAreaInset
+            });
+
         }
+
 
 
 
@@ -1008,18 +1058,11 @@
                 if (tg.onEvent) {
                     tg.onEvent('content_safe_area_changed', (event) => {
                         const insets = event?.insets || event || {};
+                        const top = Number(insets.top || 0);
                         const bottom = Number(insets.bottom || 0);
 
-                        const currentTop = Number(
-                            (insets.top ?? parseFloat(getComputedStyle(document.documentElement)
-                                .getPropertyValue('--app-top-inset'))) || 0
-                        );
-
-                        setAppInsets(
-                            Number(insets.top ?? currentTop ?? 0),
-                            bottom
-                        );
-                        setFullscreenExtraOffset(getTelegramFullscreenState());
+                        setAppInsets(top, bottom);
+                        setFullscreenExtraOffset(shouldApplyTopExtraOffset());
                     });
 
                     tg.onEvent('safe_area_changed', (event) => {
@@ -1028,7 +1071,7 @@
                         const bottom = Number(insets.bottom || 0);
 
                         setAppInsets(top, bottom);
-                        setFullscreenExtraOffset(getTelegramFullscreenState());
+                        setFullscreenExtraOffset(shouldApplyTopExtraOffset());
                     });
 
                     tg.onEvent('viewport_changed', () => {
@@ -1039,6 +1082,7 @@
                         applyTelegramInsets();
                     });
                 }
+
 
                 console.log('Running inside Telegram');
             } else {
