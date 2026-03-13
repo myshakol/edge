@@ -59,37 +59,17 @@
             overflow-x: hidden;
         }
 
-        /* Safe area for Telegram fullscreen + iPhone notch in browser */
+        :root {
+            --app-top-inset: 0px;
+            --app-bottom-inset: 0px;
+            --app-fullscreen-offset-top: 0px;
+        }
+
         .home-page,
         .game-wrapper {
-            padding-top: 0;
-            padding-bottom: 0;
+            padding-top: calc(var(--app-top-inset) + var(--app-fullscreen-offset-top));
+            padding-bottom: var(--app-bottom-inset);
         }
-
-        /* Только внутри Telegram учитываем safe area из viewport API + env() */
-        html[data-env="telegram"] .home-page,
-        html[data-env="telegram"] .game-wrapper {
-            padding-top: calc(
-                var(--tg-content-safe-area-top, 0px) +
-                env(safe-area-inset-top, 0px)
-            );
-            padding-bottom: calc(
-                var(--tg-content-safe-area-bottom, 0px) +
-                env(safe-area-inset-bottom, 0px)
-            );
-        }
-
-        /* Дополнительный «запас» только на мобильных в Telegram */
-        @media (max-width: 768px) {
-            html[data-env="telegram"] .home-page,
-            html[data-env="telegram"] .game-wrapper {
-                padding-top: calc(
-                    var(--tg-content-safe-area-top, 0px) +
-                    env(safe-area-inset-top, 0px) +
-                    36px
-                );
-            }
-        }     
 
 
         html, body {
@@ -303,18 +283,11 @@
             flex-direction: column;
             height: 100dvh;
             padding: 20px;
-            padding-top: calc(
-                20px +
-                var(--tg-viewport-content-safe-area-inset-top, 0px) +
-                var(--tg-viewport-safe-area-inset-top, 0px)
-            );
-            padding-bottom: calc(
-                20px +
-                var(--tg-viewport-content-safe-area-inset-bottom, 0px) +
-                var(--tg-viewport-safe-area-inset-bottom, 0px)
-            );
+            padding-top: calc(20px + var(--app-top-inset) + var(--app-fullscreen-offset-top));
+            padding-bottom: calc(20px + var(--app-bottom-inset));
             overflow: hidden;
         }
+
 
         .game-wrapper.active {
             display: flex;
@@ -935,6 +908,72 @@
             'burgundy': { name: 'бордовая', hex: '#8b4a6d', code: 'B', type: 'основная' }
         };
 
+        function setCssVar(name, value) {
+            document.documentElement.style.setProperty(name, value);
+        }
+
+        function setAppInsets(top = 0, bottom = 0) {
+            setCssVar('--app-top-inset', `${Math.max(0, Number(top) || 0)}px`);
+            setCssVar('--app-bottom-inset', `${Math.max(0, Number(bottom) || 0)}px`);
+        }
+
+        function setFullscreenExtraOffset(enabled) {
+            setCssVar('--app-fullscreen-offset-top', enabled ? '36px' : '0px');
+        }
+
+        function resetAppInsets() {
+            setAppInsets(0, 0);
+            setFullscreenExtraOffset(false);
+        }
+
+        function getTelegramFullscreenState() {
+            if (!tg) return false;
+
+            if (typeof tg.isFullscreen === 'boolean') {
+                return tg.isFullscreen;
+            }
+
+            if (tg.viewport && typeof tg.viewport.isFullscreen === 'boolean') {
+                return tg.viewport.isFullscreen;
+            }
+
+            return false;
+        }
+
+        function applyTelegramInsets() {
+            if (!tg) {
+                resetAppInsets();
+                return;
+            }
+
+            const contentInsets =
+                tg.contentSafeAreaInset ||
+                tg.contentSafeArea ||
+                {};
+
+            const safeInsets =
+                tg.safeAreaInset ||
+                tg.safeArea ||
+                {};
+
+            const top = Number(
+                contentInsets.top ??
+                safeInsets.top ??
+                0
+            );
+
+            const bottom = Number(
+                contentInsets.bottom ??
+                safeInsets.bottom ??
+                0
+            );
+
+            setAppInsets(top, bottom);
+            setFullscreenExtraOffset(getTelegramFullscreenState());
+        }
+
+
+
         // Telegram WebApp (может быть null в обычном браузере)
 
         let tg = null;
@@ -942,59 +981,73 @@
         (function initTelegram() {
             if (window.Telegram && window.Telegram.WebApp) {
                 tg = window.Telegram.WebApp;
-
-                // Помечаем окружение
                 document.documentElement.setAttribute('data-env', 'telegram');
 
-                // Готовим WebApp
                 try {
                     tg.ready();
                 } catch (e) {}
 
-                // Старый expand (для совместимости)
                 try {
                     tg.expand();
                 } catch (e) {}
 
-                // Новый viewport API: полноэкранный режим + safe area
-                if (tg.viewport && tg.viewport.isSupported) {
-                    try {
-                        if (tg.viewport.supportsExpand && tg.viewport.isExpanded === false) {
-                            tg.viewport.expand();
-                        }
-                        tg.viewport.enable();
+                applyTelegramInsets();
 
-                        // Запрашиваем safe area, которая учитывает именно телеграмовские контролы
-                        if (tg.requestContentSafeArea) {
-                            tg.requestContentSafeArea();
-                        }
+                try {
+                    if (tg.requestContentSafeArea) tg.requestContentSafeArea();
+                } catch (e) {}
 
-                        if (tg.onEvent) {
-                            tg.onEvent('content_safe_area_changed', (event) => {
-                                const insets = event?.insets || event; // SDK может отдавать по-разному
-                                if (!insets) return;
-                                document.documentElement.style.setProperty(
-                                    '--tg-content-safe-area-top',
-                                    insets.top + 'px'
-                                );
-                                document.documentElement.style.setProperty(
-                                    '--tg-content-safe-area-bottom',
-                                    insets.bottom + 'px'
-                                );
-                            });
-                        }
-                    } catch (e) {
-                        console.warn('Viewport safe area not supported:', e);
-                    }
+                try {
+                    if (tg.requestSafeArea) tg.requestSafeArea();
+                } catch (e) {}
+
+                try {
+                    if (tg.requestViewport) tg.requestViewport();
+                } catch (e) {}
+
+                if (tg.onEvent) {
+                    tg.onEvent('content_safe_area_changed', (event) => {
+                        const insets = event?.insets || event || {};
+                        const bottom = Number(insets.bottom || 0);
+
+                        const currentTop = Number(
+                            (insets.top ?? parseFloat(getComputedStyle(document.documentElement)
+                                .getPropertyValue('--app-top-inset'))) || 0
+                        );
+
+                        setAppInsets(
+                            Number(insets.top ?? currentTop ?? 0),
+                            bottom
+                        );
+                        setFullscreenExtraOffset(getTelegramFullscreenState());
+                    });
+
+                    tg.onEvent('safe_area_changed', (event) => {
+                        const insets = event?.insets || event || {};
+                        const top = Number(insets.top || 0);
+                        const bottom = Number(insets.bottom || 0);
+
+                        setAppInsets(top, bottom);
+                        setFullscreenExtraOffset(getTelegramFullscreenState());
+                    });
+
+                    tg.onEvent('viewport_changed', () => {
+                        applyTelegramInsets();
+                    });
+
+                    tg.onEvent('fullscreen_changed', () => {
+                        applyTelegramInsets();
+                    });
                 }
 
                 console.log('Running inside Telegram');
             } else {
-                // Обычный браузер
                 document.documentElement.setAttribute('data-env', 'web');
+                resetAppInsets();
                 console.log('Running in normal browser');
             }
         })();
+
 
 
         // ─── Theme toggle ───
