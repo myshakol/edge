@@ -93,10 +93,23 @@
         header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            gap: 16px;
             padding: 15px 40px 30px 40px;
             border-bottom: 2px solid var(--border);
         }
+
+        .header-left {
+            min-width: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
 
 
         .header-left h1 {
@@ -781,10 +794,11 @@
                 <h1>EDGE</h1>
                 <p>эротические фанты и покер на костях</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 16px;">
-            <div class="theme-toggle" onclick="toggleTheme()" title="Переключить тему"></div>
-            <div class="lang-selector" onclick="alert('EN version coming soon')">ru|eng</div>
-        </div>
+                <div class="header-controls">
+                <div class="theme-toggle" onclick="toggleTheme()" title="Переключить тему"></div>
+                <div class="lang-selector" onclick="alert('EN version coming soon')">ru|eng</div>
+            </div>
+
         </header>
 
         <div class="container">
@@ -952,24 +966,6 @@
             ].includes(platform);
         }
 
-        function getTelegramExpandedState() {
-            if (!tg) return false;
-
-            if (typeof tg.isExpanded === 'boolean') {
-                return tg.isExpanded;
-            }
-
-            if (tg.viewport && typeof tg.viewport.isExpanded === 'boolean') {
-                return tg.viewport.isExpanded;
-            }
-
-            if (tg.viewport && typeof tg.viewport.expansion === 'boolean') {
-                return tg.viewport.expansion;
-            }
-
-            return false;
-        }
-
         function getTelegramFullscreenState() {
             if (!tg) return false;
 
@@ -977,16 +973,50 @@
                 return tg.isFullscreen;
             }
 
-            if (tg.viewport && typeof tg.viewport.isFullscreen === 'boolean') {
+            if (typeof tg.viewport?.isFullscreen === 'boolean') {
                 return tg.viewport.isFullscreen;
             }
 
-            if (tg.viewport && typeof tg.viewport.fullscreen === 'boolean') {
+            if (typeof tg.viewport?.fullscreen === 'boolean') {
                 return tg.viewport.fullscreen;
+            }
+
+            const contentInsets = tg.contentSafeAreaInset || tg.contentSafeArea || {};
+            const safeInsets = tg.safeAreaInset || tg.safeArea || {};
+
+            const topInset = Math.max(
+                0,
+                Number(contentInsets.top || 0),
+                Number(safeInsets.top || 0)
+            );
+
+            const bottomInset = Math.max(
+                0,
+                Number(contentInsets.bottom || 0),
+                Number(safeInsets.bottom || 0)
+            );
+
+            const expanded =
+                typeof tg.isExpanded === 'boolean'
+                    ? tg.isExpanded
+                    : (typeof tg.viewport?.isExpanded === 'boolean'
+                        ? tg.viewport.isExpanded
+                        : (typeof tg.viewport?.expansion === 'boolean'
+                            ? tg.viewport.expansion
+                            : false));
+
+            if (expanded && topInset === 0 && bottomInset === 0) {
+                return true;
+            }
+
+            if (requestedFullscreen && expanded) {
+                return true;
             }
 
             return false;
         }
+
+
 
         function shouldApplyTopExtraOffset() {
             if (!tg) return false;
@@ -994,6 +1024,7 @@
 
             return getTelegramFullscreenState();
         }
+
 
 
 
@@ -1008,13 +1039,13 @@
             const contentInsets = tg.contentSafeAreaInset || tg.contentSafeArea || {};
             const safeInsets = tg.safeAreaInset || tg.safeArea || {};
 
-            const top = Math.max(
+            let top = Math.max(
                 0,
                 Number(contentInsets.top || 0),
                 Number(safeInsets.top || 0)
             );
 
-            const bottom = Math.max(
+            let bottom = Math.max(
                 0,
                 Number(contentInsets.bottom || 0),
                 Number(safeInsets.bottom || 0)
@@ -1023,6 +1054,10 @@
             const isExpanded = getTelegramExpandedState();
             const isFullscreen = getTelegramFullscreenState();
             const addExtraTopOffset = shouldApplyTopExtraOffset();
+
+            if (isTelegramMobilePlatform() && isFullscreen && top === 0) {
+                top = 44;
+            }
 
             setAppInsets(top, bottom);
             setFullscreenExtraOffset(addExtraTopOffset);
@@ -1042,6 +1077,7 @@
 
 
 
+
         function isRealTelegramMiniApp() {
             const w = window.Telegram?.WebApp;
             if (!w) return false;
@@ -1056,6 +1092,9 @@
         // Telegram WebApp (может быть null в обычном браузере)
 
         let tg = null;
+
+        let requestedFullscreen = false;
+
 
         (function initTelegram() {
             if (isRealTelegramMiniApp()) {
@@ -1233,21 +1272,31 @@
             
             updateDeckSelection();
             loadDecks();
+
             if (tg) {
+
+                requestedFullscreen = true;
                 try {
-                    if (tg.requestFullscreen) {
-                        tg.requestFullscreen();
-                    }
+                    if (tg.requestFullscreen) tg.requestFullscreen();
+                } catch (e) {}
+
+                try {
+                    if (tg.requestViewport) tg.requestViewport();
+                } catch (e) {}
+
+                try {
+                    if (tg.requestSafeArea) tg.requestSafeArea();
+                } catch (e) {}
+
+                try {
+                    if (tg.requestContentSafeArea) tg.requestContentSafeArea();
                 } catch (e) {}
             }
 
-            setTimeout(() => {
-                applyTelegramInsets();
-            }, 50);
+            setTimeout(applyTelegramInsets, 50);
+            setTimeout(applyTelegramInsets, 250);
+            setTimeout(applyTelegramInsets, 600);
 
-            setTimeout(() => {
-                applyTelegramInsets();
-            }, 250);
 
 
             // ✅ Telegram MainButton (только если реально внутри Telegram)
