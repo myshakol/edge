@@ -1233,6 +1233,22 @@
             
             updateDeckSelection();
             loadDecks();
+            if (tg) {
+                try {
+                    if (tg.requestFullscreen) {
+                        tg.requestFullscreen();
+                    }
+                } catch (e) {}
+            }
+
+            setTimeout(() => {
+                applyTelegramInsets();
+            }, 50);
+
+            setTimeout(() => {
+                applyTelegramInsets();
+            }, 250);
+
 
             // ✅ Telegram MainButton (только если реально внутри Telegram)
             /*if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
