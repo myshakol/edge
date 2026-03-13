@@ -77,7 +77,7 @@
         }
 
         @media (max-width: 900px) {
-            html[data-env="telegram"] .home-page {
+            html[data-env="telegram"].tg-fullscreen .home-page {
                 padding-top: calc(
                     var(--tg-content-safe-area-top, 0px) +
                     env(safe-area-inset-top, 0px) +
@@ -85,6 +85,7 @@
                 );
             }
         }
+
 
 
 
@@ -333,7 +334,7 @@
         }
 
         @media (max-width: 900px) {
-            html[data-env="telegram"] .game-wrapper {
+            html[data-env="telegram"].tg-fullscreen .game-wrapper {
                 padding-top: calc(
                     10px +
                     var(--tg-content-safe-area-top, 0px) +
@@ -342,6 +343,7 @@
                 );
             }
         }
+
 
         .game-wrapper.active {
             display: flex;
@@ -978,6 +980,47 @@
             );
         }
 
+        function syncTelegramViewportMode() {
+            const html = document.documentElement;
+            html.classList.remove('tg-fullscreen', 'tg-expanded');
+
+            if (!tg) return;
+
+            const isFullscreen =
+                typeof tg.isFullscreen === 'boolean'
+                    ? tg.isFullscreen
+                    : (typeof tg.viewport?.isFullscreen === 'boolean'
+                        ? tg.viewport.isFullscreen
+                        : (typeof tg.viewport?.fullscreen === 'boolean'
+                            ? tg.viewport.fullscreen
+                            : false));
+
+            const isExpanded =
+                typeof tg.isExpanded === 'boolean'
+                    ? tg.isExpanded
+                    : (typeof tg.viewport?.isExpanded === 'boolean'
+                        ? tg.viewport.isExpanded
+                        : (typeof tg.viewport?.expansion === 'boolean'
+                            ? tg.viewport.expansion
+                            : false));
+
+            if (isExpanded) {
+                html.classList.add('tg-expanded');
+            }
+
+            if (isFullscreen) {
+                html.classList.add('tg-fullscreen');
+            }
+
+            console.log('TG VIEWPORT MODE', {
+                isExpanded,
+                isFullscreen,
+                viewport: tg.viewport
+            });
+        }
+
+
+
 
         // Telegram WebApp (может быть null в обычном браузере)
 
@@ -991,6 +1034,7 @@
 
                 try { tg.ready(); } catch (e) {}
                 try { tg.expand(); } catch (e) {}
+                syncTelegramViewportMode();
 
                 // Читаем Telegram-специфичные insets через CSS-переменные
                 // (НЕ через JS — потому что tg.safeAreaInset возвращает 0 в fullscreen)
@@ -1000,6 +1044,8 @@
                     const bottom = Number(insets.bottom || 0);
                     document.documentElement.style.setProperty('--tg-content-safe-area-top', top + 'px');
                     document.documentElement.style.setProperty('--tg-content-safe-area-bottom', bottom + 'px');
+
+                    syncTelegramViewportMode();
                 };
 
                 applyContentSafeArea();
@@ -1010,6 +1056,7 @@
                     tg.onEvent('content_safe_area_changed', applyContentSafeArea);
                     tg.onEvent('safe_area_changed', applyContentSafeArea);
                     tg.onEvent('fullscreen_changed', applyContentSafeArea);
+                    tg.onEvent('viewport_changed', applyContentSafeArea);
                 }
 
                 console.log('Running inside Telegram', { platform: tg.platform });
