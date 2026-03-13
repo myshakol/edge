@@ -989,14 +989,9 @@
         }
 
         function shouldApplyTopExtraOffset() {
-            if (!tg) return false;
-
-            const isMobile = isTelegramMobilePlatform();
-            const isExpanded = getTelegramExpandedState();
-            const isFullscreen = getTelegramFullscreenState();
-
-            return isMobile && isExpanded && !isFullscreen;
+            return false;
         }
+
 
 
 
@@ -1006,21 +1001,23 @@
                 return;
             }
 
-            const contentInsets =
-                tg.contentSafeAreaInset ||
-                tg.contentSafeArea ||
-                {};
+            const contentInsets = tg.contentSafeAreaInset || tg.contentSafeArea || {};
+            const safeInsets = tg.safeAreaInset || tg.safeArea || {};
 
-            const safeInsets =
-                tg.safeAreaInset ||
-                tg.safeArea ||
-                {};
+            const top = Math.max(
+                0,
+                Number(contentInsets.top || 0),
+                Number(safeInsets.top || 0)
+            );
 
-            const top = Number(contentInsets.top ?? safeInsets.top ?? 0);
-            const bottom = Number(contentInsets.bottom ?? safeInsets.bottom ?? 0);
+            const bottom = Math.max(
+                0,
+                Number(contentInsets.bottom || 0),
+                Number(safeInsets.bottom || 0)
+            );
 
             setAppInsets(top, bottom);
-            setFullscreenExtraOffset(shouldApplyTopExtraOffset());
+            setFullscreenExtraOffset(false);
 
             console.log('TG STATE', {
                 platform: tg?.platform,
@@ -1028,10 +1025,12 @@
                 isFullscreen: tg?.isFullscreen,
                 viewport: tg?.viewport,
                 safeAreaInset: tg?.safeAreaInset,
-                contentSafeAreaInset: tg?.contentSafeAreaInset
+                contentSafeAreaInset: tg?.contentSafeAreaInset,
+                appliedTop: top,
+                appliedBottom: bottom
             });
-
         }
+
 
         function isRealTelegramMiniApp() {
             const w = window.Telegram?.WebApp;
