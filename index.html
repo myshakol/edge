@@ -1021,7 +1021,15 @@
 
         }
 
+        function isRealTelegramMiniApp() {
+            const w = window.Telegram?.WebApp;
+            if (!w) return false;
 
+            return (
+                (typeof w.initData === 'string' && w.initData.length > 0) ||
+                !!w.initDataUnsafe?.user
+            );
+        }
 
 
         // Telegram WebApp (может быть null в обычном браузере)
@@ -1029,7 +1037,7 @@
         let tg = null;
 
         (function initTelegram() {
-            if (window.Telegram && window.Telegram.WebApp) {
+            if (isRealTelegramMiniApp()) {
                 tg = window.Telegram.WebApp;
                 document.documentElement.setAttribute('data-env', 'telegram');
 
@@ -1056,22 +1064,12 @@
                 } catch (e) {}
 
                 if (tg.onEvent) {
-                    tg.onEvent('content_safe_area_changed', (event) => {
-                        const insets = event?.insets || event || {};
-                        const top = Number(insets.top || 0);
-                        const bottom = Number(insets.bottom || 0);
-
-                        setAppInsets(top, bottom);
-                        setFullscreenExtraOffset(shouldApplyTopExtraOffset());
+                    tg.onEvent('content_safe_area_changed', () => {
+                        applyTelegramInsets();
                     });
 
-                    tg.onEvent('safe_area_changed', (event) => {
-                        const insets = event?.insets || event || {};
-                        const top = Number(insets.top || 0);
-                        const bottom = Number(insets.bottom || 0);
-
-                        setAppInsets(top, bottom);
-                        setFullscreenExtraOffset(shouldApplyTopExtraOffset());
+                    tg.onEvent('safe_area_changed', () => {
+                        applyTelegramInsets();
                     });
 
                     tg.onEvent('viewport_changed', () => {
@@ -1083,9 +1081,9 @@
                     });
                 }
 
-
                 console.log('Running inside Telegram');
             } else {
+                tg = null;
                 document.documentElement.setAttribute('data-env', 'web');
                 resetAppInsets();
                 console.log('Running in normal browser');
