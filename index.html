@@ -989,8 +989,12 @@
         }
 
         function shouldApplyTopExtraOffset() {
-            return false;
+            if (!tg) return false;
+            if (!isTelegramMobilePlatform()) return false;
+
+            return getTelegramFullscreenState();
         }
+
 
 
 
@@ -1016,20 +1020,26 @@
                 Number(safeInsets.bottom || 0)
             );
 
+            const isExpanded = getTelegramExpandedState();
+            const isFullscreen = getTelegramFullscreenState();
+            const addExtraTopOffset = shouldApplyTopExtraOffset();
+
             setAppInsets(top, bottom);
-            setFullscreenExtraOffset(false);
+            setFullscreenExtraOffset(addExtraTopOffset);
 
             console.log('TG STATE', {
                 platform: tg?.platform,
-                isExpanded: tg?.isExpanded,
-                isFullscreen: tg?.isFullscreen,
+                isExpanded,
+                isFullscreen,
                 viewport: tg?.viewport,
                 safeAreaInset: tg?.safeAreaInset,
                 contentSafeAreaInset: tg?.contentSafeAreaInset,
                 appliedTop: top,
-                appliedBottom: bottom
+                appliedBottom: bottom,
+                extraTopOffset: addExtraTopOffset ? 36 : 0
             });
         }
+
 
 
         function isRealTelegramMiniApp() {
