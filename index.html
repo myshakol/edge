@@ -65,10 +65,19 @@
             --app-fullscreen-offset-top: 0px;
         }
 
-        .home-page,
-        .game-wrapper {
+        .home-page {
             padding-top: calc(var(--app-top-inset) + var(--app-fullscreen-offset-top));
             padding-bottom: var(--app-bottom-inset);
+        }
+
+        .game-wrapper {
+            display: none;
+            flex-direction: column;
+            height: 100dvh;
+            padding: 20px;
+            padding-top: calc(20px + var(--app-top-inset) + var(--app-fullscreen-offset-top));
+            padding-bottom: calc(20px + var(--app-bottom-inset));
+            overflow: hidden;
         }
 
 
@@ -85,7 +94,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 30px 40px;
+            padding: 0 40px 30px 40px;
             border-bottom: 2px solid var(--border);
         }
 
