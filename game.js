@@ -1,0 +1,584 @@
+        document.addEventListener('touchstart', function () {}, { passive: true });
+
+        // Данные игры
+        let gameState = {
+            decks: {
+                GM: null, GF: null, YM: null, YF: null, RM: null, RF: null, BM: null, BF: null, EXL1: null, EXL2: null
+            },
+            active_decks: ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF'],
+            current_color: 'green',
+            played_cards: [],
+            timer_interval: null,
+            timer_duration: 0,
+            game_mode: 'just'
+        };
+
+        const colorMap = {
+            'green': { name: 'зеленая', hex: '#7d8f6f', code: 'G', type: 'основная' },
+            'yellow': { name: 'желтая', hex: '#c9a05d', code: 'Y', type: 'фото/видео' },
+            'red': { name: 'красная', hex: '#b84a50', code: 'R', type: 'основная' },
+            'burgundy': { name: 'бордовая', hex: '#8b4a6d', code: 'B', type: 'основная' }
+        };
+
+       
+        
+
+        function isRealTelegramMiniApp() {
+            const w = window.Telegram?.WebApp;
+            if (!w) return false;
+
+            return (
+                (typeof w.initData === 'string' && w.initData.length > 0) ||
+                !!w.initDataUnsafe?.user
+            );
+        }
+
+        function syncTelegramViewportMode() {
+            const html = document.documentElement;
+            html.classList.remove('tg-fullscreen', 'tg-expanded');
+
+            if (!tg) return;
+
+            const isFullscreen =
+                typeof tg.isFullscreen === 'boolean'
+                    ? tg.isFullscreen
+                    : (typeof tg.viewport?.isFullscreen === 'boolean'
+                        ? tg.viewport.isFullscreen
+                        : (typeof tg.viewport?.fullscreen === 'boolean'
+                            ? tg.viewport.fullscreen
+                            : false));
+
+            const isExpanded =
+                typeof tg.isExpanded === 'boolean'
+                    ? tg.isExpanded
+                    : (typeof tg.viewport?.isExpanded === 'boolean'
+                        ? tg.viewport.isExpanded
+                        : (typeof tg.viewport?.expansion === 'boolean'
+                            ? tg.viewport.expansion
+                            : false));
+
+            if (isExpanded) {
+                html.classList.add('tg-expanded');
+            }
+
+            if (isFullscreen) {
+                html.classList.add('tg-fullscreen');
+            }
+
+            console.log('TG VIEWPORT MODE', {
+                isExpanded,
+                isFullscreen,
+                viewport: tg.viewport
+            });
+        }
+
+
+
+
+        // Telegram WebApp (может быть null в обычном браузере)
+
+        let tg = null;
+
+
+        (function initTelegram() {
+            if (isRealTelegramMiniApp()) {
+                tg = window.Telegram.WebApp;
+                document.documentElement.setAttribute('data-env', 'telegram');
+
+                try { tg.ready(); } catch (e) {}
+                try { tg.expand(); } catch (e) {}
+                syncTelegramViewportMode();
+
+                // Читаем Telegram-специфичные insets через CSS-переменные
+                // (НЕ через JS — потому что tg.safeAreaInset возвращает 0 в fullscreen)
+                const applyContentSafeArea = () => {
+                    const insets = tg.contentSafeAreaInset || tg.contentSafeArea || {};
+                    const top = Number(insets.top || 0);
+                    const bottom = Number(insets.bottom || 0);
+                    document.documentElement.style.setProperty('--tg-content-safe-area-top', top + 'px');
+                    document.documentElement.style.setProperty('--tg-content-safe-area-bottom', bottom + 'px');
+
+                    syncTelegramViewportMode();
+                };
+
+                applyContentSafeArea();
+
+                try { if (tg.requestContentSafeArea) tg.requestContentSafeArea(); } catch (e) {}
+
+                if (tg.onEvent) {
+                    tg.onEvent('content_safe_area_changed', applyContentSafeArea);
+                    tg.onEvent('safe_area_changed', applyContentSafeArea);
+                    tg.onEvent('fullscreen_changed', applyContentSafeArea);
+                    tg.onEvent('viewport_changed', applyContentSafeArea);
+                }
+
+                console.log('Running inside Telegram', { platform: tg.platform });
+            } else {
+                tg = null;
+                document.documentElement.setAttribute('data-env', 'web');
+                console.log('Running in normal browser');
+            }
+        })();
+
+
+        // ─── Theme toggle ───
+        function getPreferredTheme() {
+            if (tg && tg.colorScheme) return tg.colorScheme;
+            const saved = localStorage.getItem('edge-theme');
+            if (saved) return saved;
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                return 'dark';
+            }
+            return 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            localStorage.setItem('edge-theme', next);
+            triggerHaptic('light');
+
+            document.querySelectorAll('.theme-toggle').forEach(el => {
+                if (next === 'dark') {
+                    el.classList.add('theme-toggle-on');
+                } else {
+                    el.classList.remove('theme-toggle-on');
+                }
+            });
+        }
+
+        applyTheme(getPreferredTheme());
+        document.addEventListener('DOMContentLoaded', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            document.querySelectorAll('.theme-toggle').forEach(el => {
+                if (current === 'dark') el.classList.add('theme-toggle-on');
+            });
+            console.log('🎮 EDGE Game loaded');
+            
+            // Предзагрузка колод в фоне
+            setTimeout(() => { loadDecks(); }, 500);            
+        });
+
+
+        // ─── Haptic Feedback ───
+        function triggerHaptic(style) {
+            if (tg && tg.HapticFeedback) {
+                try { tg.HapticFeedback.impactOccurred(style || 'light'); } catch(e) {}
+            }
+        }
+
+        function triggerHapticNotification(type) {
+            if (tg && tg.HapticFeedback) {
+                try { tg.HapticFeedback.notificationOccurred(type || 'success'); } catch(e) {}
+            }
+        }
+
+
+        async function loadDecks() {
+            const deckCodes = ['GM', 'GF', 'YM', 'YF', 'RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2'];
+            for (let code of deckCodes) {
+                try {
+                    const response = await fetch(`data/${code.toLowerCase()}.json`);
+                    if (!response.ok) throw new Error(`Failed to load ${code}.json`);
+                    const data = await response.json();
+                    gameState.decks[code] = JSON.parse(JSON.stringify(data.cards)); // Deep copy
+                    console.log(`✓ Loaded ${code}: ${gameState.decks[code].length} cards`);
+                } catch (e) {
+                    console.warn(`Could not load ${code}.json:`, e);
+                    gameState.decks[code] = [];
+                }
+            }
+        }
+
+        function toggleCollapsible(btn) {
+            btn.classList.toggle('active');
+            btn.nextElementSibling.classList.toggle('active');
+        }
+
+        function updateDeckSelection() {
+            const mainDeck = document.getElementById('main-deck').checked;
+            const photoDeck = document.getElementById('photo-deck').checked;
+            const extraDeck = document.getElementById('extra-deck').checked;
+            
+            gameState.active_decks = [];
+            if (mainDeck) gameState.active_decks.push('GM', 'GF');
+            if (photoDeck) gameState.active_decks.push('YM', 'YF');
+            if (extraDeck) gameState.active_decks.push('RM', 'RF', 'BM', 'BF', 'EXL1', 'EXL2');
+        }
+
+        function onModeChange() {
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const extraDeckCheckbox = document.getElementById('extra-deck');
+            
+            if (mode === 'poker') {
+                extraDeckCheckbox.checked = true;
+                extraDeckCheckbox.disabled = true;
+                updateDeckSelection();
+            } else {
+                extraDeckCheckbox.disabled = false;
+            }
+        }
+
+        function goToGame() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('game-page').classList.add('active');
+            
+            gameState.game_mode = document.querySelector('input[name="mode"]:checked').value;
+            const extraDeck = document.getElementById('extra-deck').checked;
+            const btnExtra = document.getElementById('btn-extra');
+            
+            // Кнопка появляется, если экстра-колода выбрана (независимо от режима)
+            if (extraDeck) {
+                btnExtra.style.display = 'flex';
+            } else {
+                btnExtra.style.display = 'none';
+            }
+            
+            updateDeckSelection();
+            loadDecks();
+
+
+            // ✅ Telegram MainButton (только если реально внутри Telegram)
+            /*if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tg.MainButton.setText('Поделиться EDGE');
+                tg.MainButton.show();
+                tg.MainButton.onClick(() => {
+                    const shareText = `Я играю в EDGE!\nТекущий уровень: ${gameState.current_color}`;
+                    tg.openTelegramLink(
+                        `https://t.me/share/url?url=${encodeURIComponent('https://t.me/your_bot_name')}&text=${encodeURIComponent(shareText)}`
+                    );
+                });
+            }*/
+
+
+        }
+
+        function goHome() {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Вы уверены?';
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = confirmGoHome;
+        }
+
+        function closeModal() {
+            triggerHaptic('light');
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function confirmGoHome() {
+            triggerHaptic('medium');
+            // Полностью сбрасываем игру в нулевое состояние
+            resetGame();
+
+            document.getElementById('game-page').classList.remove('active');
+            document.getElementById('home-page').style.display = 'block';
+            closeModal();
+        }
+
+        function resetGameConfirm() {
+            triggerHaptic('light');
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Вы уверены, что хотите перезапустить игру?';
+            
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = function() {
+                resetGame();
+                closeModal();
+            };
+        }
+
+        function resetGame() {
+            // Останавливаем и сбрасываем таймер
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            gameState.timer_duration = 0;
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('timer').classList.remove('running');
+
+            gameState.played_cards = [];
+            document.getElementById('card-text').textContent = 'Нажми кнопку "карта М" или "карта Ж" чтобы вытянуть задание';
+            document.getElementById('card-meta').style.display = 'none';
+            gameState.current_color = 'green';
+            setLevel('green');
+
+            loadDecks();
+        }
+
+        function levelUpConfirm() {
+            triggerHaptic('light');
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('modal-text').textContent = 'Перейти на следующий уровень?';
+            
+            const confirmBtn = document.querySelector('.modal-buttons button:nth-child(2)');
+            confirmBtn.onclick = function() {
+                levelUp();
+                closeModal();
+            };
+        }
+
+        function levelUp() {
+            const levels = ['green', 'yellow', 'red', 'burgundy'];
+            const currentIndex = levels.indexOf(gameState.current_color);
+            
+            if (currentIndex < levels.length - 1) {
+                setLevel(levels[currentIndex + 1]);
+            } else {
+                alert('Вы достигли максимального уровня!');
+            }
+        }
+
+        function setLevel(level) {
+            triggerHapticNotification('success');
+            gameState.current_color = level;
+
+            // Скрыть палитру после выбора
+            document.getElementById('color-selector').classList.remove('active');
+
+            // Сбросить карту на начальный текст
+            document.getElementById('card-text').textContent = 'Нажми кнопку "карта М" или "карта Ж" чтобы вытянуть задание';
+            document.getElementById('card-id').textContent = '--';
+            document.getElementById('card-meta').style.display = 'none';
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('timer').classList.remove('running');
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            gameState.timer_duration = 0;            
+            
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-level="${level}"]`)?.classList.add('active');
+            
+            const cardColor = document.getElementById('card-color');
+            cardColor.textContent = colorMap[level].name;
+            cardColor.className = `card-color color-${level}`;
+            
+            const cardType = document.getElementById('card-type');
+            cardType.textContent = colorMap[level].type;
+            
+            // Скрываем/показываем кнопку "карта Ж ○" в зависимости от уровня
+            const btnExtra = document.getElementById('btn-extra');
+            if (level === 'burgundy') {
+                // На бордовом уровне кнопка скрывается
+                btnExtra.style.display = 'none';
+            } else {
+                // На других уровнях - всегда видна, если выбрана экстра-колода
+                const extraDeck = document.getElementById('extra-deck').checked;
+                btnExtra.style.display = extraDeck ? 'flex' : 'none';
+            }
+        }
+
+        function toggleColorSelector() {
+            const selector = document.getElementById('color-selector');
+            selector.classList.toggle('active');
+        }
+
+        function drawCard(type) {
+             triggerHaptic('light');
+            // Останавливаем старый таймер полностью
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+            }
+            document.getElementById('timer').classList.remove('running');
+            
+            // Определяем, из какой колоды тянуть карту
+            let deckCode;
+            
+            if (type === 'extra') {
+                // Для экстра колоды: выбираем в зависимости от уровня
+                // EXL1 для зеленого уровня, EXL2 для желтого и красного
+                if (gameState.current_color === 'green') {
+                    deckCode = 'EXL1';
+                } else if (gameState.current_color === 'yellow' || gameState.current_color === 'red') {
+                    deckCode = 'EXL2';
+                } else {
+                    // Для бордового уровня кнопка не должна быть видна
+                    return;
+                }
+            } else {
+                // Для обычных: color code + gender code
+                const colorCode = colorMap[gameState.current_color].code;
+                const genderCode = type === 'male' ? 'M' : 'F';
+                deckCode = colorCode + genderCode;
+            }
+
+            // Проверяем, есть ли карты в этой колоде
+            const deck = gameState.decks[deckCode];
+            if (!deck || deck.length === 0) {
+                showEmptyDeck(deckCode, type);
+                return;
+            }
+
+            // ✅ ПРАВИЛЬНО: Считаем общее количество карт с учетом count
+            const totalCards = deck.reduce((sum, card) => sum + card.count, 0);
+            
+            if (totalCards === 0) {
+                showEmptyDeck(deckCode, type);
+                return;
+            }
+
+            // Генерируем случайное число от 0 до totalCards - 1
+            let randomPick = Math.floor(Math.random() * totalCards);
+            
+            // Находим карту, на которую попало случайное число
+            let selectedCard = null;
+            let selectedIndex = -1;
+            
+            for (let i = 0; i < deck.length; i++) {
+                if (randomPick < deck[i].count) {
+                    selectedCard = deck[i];
+                    selectedIndex = i;
+                    break;
+                }
+                randomPick -= deck[i].count;
+            }
+
+            // Отображаем карту
+            displayCard(selectedCard, deckCode);
+
+            // Уменьшаем count или удаляем карту
+            selectedCard.count--;
+            if (selectedCard.count <= 0) {
+                deck.splice(selectedIndex, 1);
+                console.log(`✗ Card ${selectedCard.id} removed from ${deckCode} (was last copy)`);
+            } else {
+                console.log(`✓ Card ${selectedCard.id} count reduced to ${selectedCard.count}`);
+            }
+
+            console.log(`${deckCode} remaining: ${deck.length} unique cards, ${totalCards - 1} total cards`);
+        }
+
+
+        function displayCard(card, deckCode) {
+            // ID карты
+            document.getElementById('card-id').textContent = card.id;
+
+            // Текст карты
+            document.getElementById('card-text').textContent = card.text;
+
+            // Метаинформация
+            const metaDiv = document.getElementById('card-meta');
+            let metaHTML = '';
+
+
+            const icons = {
+                time: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+                location: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>',
+                partial: '<svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2 A10 10 0 0 1 12 22 Z" fill="currentColor"/></svg>',
+                full: '<svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>',
+                question: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>',
+                photo: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>'
+            };
+
+            if (card.duration) {
+                metaHTML += `<span>${icons.time} Время: ${card.duration} сек</span>`;
+            }
+
+            if (card.location) {
+                metaHTML += `<span>${icons.location} Место: ${card.location}</span>`;
+            }
+
+            if (card.temporary_nudity) {
+                metaHTML += `<span>${icons.partial} Частичное обнажение</span>`;
+            }
+
+            if (card.permanent_nudity) {
+                metaHTML += `<span>${icons.full} Снять одежду</span>`;
+            }
+
+            if (card.question) {
+                metaHTML += `<span>${icons.question} Вопрос</span>`;
+            }
+
+            if (card.photo) {
+                metaHTML += `<span>${icons.photo} Фото/видео съёмка</span>`;
+            }
+
+            if (metaHTML) {
+                metaDiv.innerHTML = metaHTML;
+                metaDiv.style.display = 'block';
+            } else {
+                metaDiv.style.display = 'none';
+            }
+
+            // Устанавливаем дuration для таймера
+            gameState.timer_duration = card.duration || 0;
+             // Сбрасываем таймер на новое значение
+            const minutes = Math.floor(gameState.timer_duration / 60);
+            const seconds = gameState.timer_duration % 60;
+            document.getElementById('timer').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timer').classList.remove('running');
+            
+        }
+
+        function showEmptyDeck(deckCode, type) {
+            // Определяем цвет и пол на основе кода колоды
+            const colorCode = deckCode.charAt(0); // 'G', 'Y', 'R', 'B'
+            const genderCode = deckCode.charAt(1); // 'M', 'F'
+            
+            // Получаем названия
+            const colorName = Object.values(colorMap).find(c => c.code === colorCode)?.name || deckCode;
+            const genderName = genderCode === 'M' ? 'М' : (genderCode === 'F' ? 'Ж' : '');
+            
+            document.getElementById('card-id').textContent = deckCode;
+            document.getElementById('card-text').innerHTML = 
+                `<div class="empty-deck-message">Карты в колоде <strong>${colorName}</strong> <strong>${genderName}</strong> закончились. Переходите на следующий уровень!</div>`;
+            document.getElementById('card-meta').style.display = 'none';
+            document.getElementById('timer').textContent = '00:00';
+        }
+
+        function startTimer() {
+            triggerHaptic('soft');
+            const timer = document.getElementById('timer');
+            if (gameState.timer_duration <= 0) return;
+
+            // Если таймер уже запущен — остановить и вернуть исходное значение, не запуская заново
+            if (gameState.timer_interval) {
+                clearInterval(gameState.timer_interval);
+                gameState.timer_interval = null;
+                timer.classList.remove('running');
+
+                const minutes = Math.floor(gameState.timer_duration / 60);
+                const seconds = gameState.timer_duration % 60;
+                timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                return;
+            }
+
+            // Таймер остановлен — запускаем отсчет с исходного значения
+            let remaining = gameState.timer_duration;
+            timer.classList.add('running');
+
+            gameState.timer_interval = setInterval(() => {
+                remaining--;
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timer.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (remaining <= 0) {
+                    clearInterval(gameState.timer_interval);
+                    gameState.timer_interval = null;
+                    timer.classList.remove('running');
+                }
+            }, 1000);
+        }
+
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎮 EDGE Game loaded');
+        });
+
+        // Disable double-tap zoom on iOS
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
