@@ -1,0 +1,783 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --text-muted: #666666;
+            --border: #000000;
+            --btn-bg: #ffffff;
+            --btn-text: #000000;
+            --btn-hover-bg: #000000;
+            --btn-hover-text: #ffffff;
+            --card-bg: #ffffff;
+            --collapsible-content-bg: #f9f9f9;
+            --collapsible-hover-bg: #f5f5f5;
+            --timer-border: #dddddd;
+            --meta-border: #cccccc;
+            --modal-overlay: rgba(0,0,0,0.5);
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a1a;
+            --text: #e0e0e0;
+            --text-muted: #999999;
+            --border: #e0e0e0;
+            --btn-bg: #1a1a1a;
+            --btn-text: #e0e0e0;
+            --btn-hover-bg: #e0e0e0;
+            --btn-hover-text: #1a1a1a;
+            --card-bg: #242424;
+            --collapsible-content-bg: #2a2a2a;
+            --collapsible-hover-bg: #333333;
+            --timer-border: #555555;
+            --meta-border: #555555;
+            --modal-overlay: rgba(0,0,0,0.7);
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+
+        .home-page {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        html[data-env="telegram"] .home-page {
+            padding-top: calc(
+                var(--tg-content-safe-area-top, 0px) +
+                env(safe-area-inset-top, 0px)
+            );
+            padding-bottom: calc(
+                var(--tg-content-safe-area-bottom, 0px) +
+                env(safe-area-inset-bottom, 0px)
+            );
+        }
+
+        @media (max-width: 900px) {
+            html[data-env="telegram"].tg-fullscreen .home-page {
+                padding-top: calc(
+                    var(--tg-content-safe-area-top, 0px) +
+                    env(safe-area-inset-top, 0px) +
+                    36px
+                );
+            }
+        }
+
+
+
+
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 15px 40px 30px 40px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header-left {
+            min-width: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+
+
+        .header-left h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .lang-selector {
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 2px;
+        }
+
+        /* MAIN CONTENT */
+        .container {
+            max-width: 600px;
+            margin: 60px auto 0 auto;
+            padding: 0 40px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        .btn-play {
+            font-size: 20px;
+            padding: 20px;
+            margin: 40px 0;
+        }
+
+        /* COLLAPSIBLE */
+        .collapsible {
+            width: 100%;
+            padding: 12px;
+            margin: 30px 0 0 0;    
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+
+        .collapsible:hover {
+            background-color: var(--collapsible-hover-bg);
+        }
+
+        .collapsible.active {
+            background-color: var(--btn-hover-bg);;
+            color: var(--btn-hover-text);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 20px;
+            margin: 0 0 30px 0;  
+            border: 2px solid var(--border);
+            border-top: none;
+            background-color: var(--collapsible-content-bg);
+        }
+
+        .collapsible-content.active {
+            display: block;
+        }
+
+
+        /* CHECKBOXES */
+        .checkbox-group {
+            margin: 0;
+        }
+
+        .checkbox-item:first-child {
+            margin-top: 0;
+        }
+
+        .checkbox-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--text);
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .info-icon {
+            cursor: help;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* RADIO BUTTONS */
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: var(--text);
+        }
+
+        .radio-item label {
+            cursor: pointer;
+        }
+
+        /* FOOTER LINKS */
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 80px;
+            padding-bottom: 60px;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 3px;
+            transition: all 0.2s;
+        }
+
+        .footer-links a:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        /* GAME PAGE STYLES */
+
+
+        .game-wrapper {
+            display: none;
+            flex-direction: column;
+            height: 100dvh;
+            padding: 20px;
+            padding-top: calc(10px + env(safe-area-inset-top, 0px));
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            overflow: hidden;
+        }
+
+        html[data-env="telegram"] .game-wrapper {
+            padding-top: calc(
+                10px +
+                var(--tg-content-safe-area-top, 0px) +
+                env(safe-area-inset-top, 0px)
+            );
+            padding-bottom: calc(
+                20px +
+                var(--tg-content-safe-area-bottom, 0px) +
+                env(safe-area-inset-bottom, 0px)
+            );
+        }
+
+        @media (max-width: 900px) {
+            html[data-env="telegram"].tg-fullscreen .game-wrapper {
+                padding-top: calc(
+                    10px +
+                    var(--tg-content-safe-area-top, 0px) +
+                    env(safe-area-inset-top, 0px) +
+                    36px
+                );
+            }
+        }
+
+
+        .game-wrapper.active {
+            display: flex;
+        }
+
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 10px 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+
+        .game-header-left {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .game-header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .game-header-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .game-header-btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        .card-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;  /* центрируем по горизонтали */
+            align-items: stretch;     /* карта тянется по высоте */
+            margin: 0;
+            padding: 0;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            border: 3px solid var(--border);
+            padding: 20px;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            gap: 10px;
+        }
+
+        .card-header > div:first-child {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-color {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .card-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 30px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px dashed var(--meta-border);
+            text-align: left;
+        }
+
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+        }
+
+        .card-meta svg {
+            flex-shrink: 0;
+            margin-right: 6px;
+        }
+
+        .timer-container {
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .timer {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border: 1px solid var(--timer-border);
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .timer:hover {
+            border-color: var(--border);
+        }
+
+        .timer.running {
+            color: #d32f2f;
+        }
+
+        .color-selector-container {
+            display: none;
+            position: fixed;
+            bottom: 180px;
+            right: 30px;
+            background-color: var(--bg);
+            border: 2px solid var(--border);
+            padding: 12px;
+            gap: 8px;
+            z-index: 500;
+            flex-direction: column;
+        }
+
+        .color-selector-container.active {
+            display: flex;
+        }
+
+        .color-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .color-btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        .color-btn.active {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+
+        .level-up-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .level-up-btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        .palette-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 20px;
+        }
+
+        .palette-btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        /* Низ экрана: общий блок для всех кнопок, прижат к safe area */
+        .game-footer {
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
+
+        .card-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 0;
+            justify-content: center;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: center;
+            align-items: center;
+        }        
+
+        .card-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .card-btn:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+        .card-btn.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* COLOR PALETTE */
+        .color-green { color: #7d8f6f; }
+        .color-yellow { color: #c9a05d; }
+        .color-red { color: #b84a50; }
+        .color-burgundy { color: #8b4a6d; }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            width: 44px;
+            height: 24px;
+            border-radius: 999px;
+            background-color: var(--btn-bg);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            transition: background-color 0.25s, border-color 0.25s;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--text);
+            transition: transform 0.25s, background-color 0.25s;
+            pointer-events: none;
+        }
+
+        .theme-toggle.theme-toggle-on::before {
+            transform: translateX(18px);
+        }
+
+
+
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .card {
+                padding: 20px;
+            }
+
+            .card-text {
+                font-size: 14px;
+            }
+
+            .timer {
+                font-size: 18px;
+                padding: 4px 8px;
+            }
+
+            .game-wrapper {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .control-buttons {
+                margin-top: 12px;
+            }
+
+            .card-buttons {
+                margin-top: 12px;
+            }
+        }
+
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-overlay);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 3px solid var(--border);
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .modal-buttons button:hover {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+        }
+
+
+        .empty-deck-message {
+            text-align: center;
+            font-size: 14px;
+            color: #b84a50;
+            padding: 20px;
+        }
+
+        /* Active tap feedback — MUST come AFTER :hover to override it */
+        .btn:active,
+        .card-btn:active,
+        .game-header-btn:active,
+        .level-up-btn:active,
+        .palette-btn:active,
+        .color-btn:active,
+        .collapsible:active,
+        .modal-buttons button:active {
+            background-color: var(--btn-hover-bg);
+            color: var(--btn-hover-text);
+            transform: scale(0.97); /* чуть мягче, чтобы на десктопе не казались огромными */
+            transition: transform 0.05s, background-color 0.05s, color 0.05s;
+        }
+
+        /* Fix sticky hover on iOS — active state for tap feedback */
+        @media (hover: none) {
+            /* На тач-устройствах hover не нужен вообще */
+            .btn:hover,
+            .card-btn:hover,
+            .game-header-btn:hover,
+            .level-up-btn:hover,
+            .palette-btn:hover,
+            .color-btn:hover,
+            .collapsible:hover,
+            .modal-buttons button:hover,
+            .footer-links a:hover {
+                background-color: var(--btn-bg);
+                color: var(--btn-text);
+            }
+
+            .collapsible.active:hover {
+                background-color: var(--btn-hover-bg);
+                color: var(--btn-hover-text);
+            }
+        }
+
