@@ -213,14 +213,20 @@
         applyTheme(getPreferredTheme());
         document.addEventListener('DOMContentLoaded', () => {
             const current = document.documentElement.getAttribute('data-theme');
+
             document.querySelectorAll('.theme-toggle').forEach(el => {
                 if (current === 'dark') el.classList.add('theme-toggle-on');
             });
+
+            updateFullscreenToggleButton();
+
             console.log('🎮 EDGE Game loaded');
-            
-            // Предзагрузка колод в фоне
-            setTimeout(() => { loadDecks(); }, 500);            
+
+            setTimeout(() => {
+                loadDecks();
+            }, 500);
         });
+
 
 
         // ─── Haptic Feedback ───
