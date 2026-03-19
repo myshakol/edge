@@ -169,6 +169,15 @@
             margin: 40px 0;
         }
 
+        .btn-fullscreen-toggle {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            padding: 14px 16px;
+        }
+
         /* COLLAPSIBLE */
         .collapsible {
             width: 100%;

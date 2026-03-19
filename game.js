@@ -73,6 +73,59 @@
         }
 
 
+        function isTelegramFullscreenActive() {
+            if (!tg) return false;
+
+            return typeof tg.isFullscreen === 'boolean'
+                ? tg.isFullscreen
+                : (typeof tg.viewport?.isFullscreen === 'boolean'
+                    ? tg.viewport.isFullscreen
+                    : (typeof tg.viewport?.fullscreen === 'boolean'
+                        ? tg.viewport.fullscreen
+                        : false));
+        }
+
+        function updateFullscreenToggleButton() {
+            const btn = document.getElementById('fullscreen-toggle-btn');
+            if (!btn) return;
+
+            if (!tg) {
+                btn.style.display = 'none';
+                return;
+            }
+
+            btn.style.display = 'block';
+            btn.textContent = isTelegramFullscreenActive()
+                ? 'Выйти из полноэкранного режима'
+                : 'Развернуть на полный экран';
+        }
+
+        async function toggleFullscreenMode() {
+            if (!tg) return;
+
+            try {
+                if (isTelegramFullscreenActive()) {
+                    if (typeof tg.exitFullscreen === 'function') {
+                        await tg.exitFullscreen();
+                    }
+                } else {
+                    if (typeof tg.requestFullscreen === 'function') {
+                        await tg.requestFullscreen();
+                    } else {
+                        try { tg.expand(); } catch (e) {}
+                    }
+                }
+            } catch (e) {
+                console.warn('Fullscreen toggle failed:', e);
+            }
+
+            syncTelegramViewportMode();
+            updateFullscreenToggleButton();
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 150);
+        }
 
 
         // Telegram WebApp (может быть null в обычном браузере)
@@ -95,13 +148,18 @@
                     const insets = tg.contentSafeAreaInset || tg.contentSafeArea || {};
                     const top = Number(insets.top || 0);
                     const bottom = Number(insets.bottom || 0);
+
                     document.documentElement.style.setProperty('--tg-content-safe-area-top', top + 'px');
                     document.documentElement.style.setProperty('--tg-content-safe-area-bottom', bottom + 'px');
 
                     syncTelegramViewportMode();
+                    updateFullscreenToggleButton();
                 };
 
+
                 applyContentSafeArea();
+                updateFullscreenToggleButton();
+
 
                 try { if (tg.requestContentSafeArea) tg.requestContentSafeArea(); } catch (e) {}
 
